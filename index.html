@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECODENÚNCIA - Sistema Nacional de Monitoria de Infracções Ambientais</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #e2e8f0;
+        }
+        .bg-dark-card {
+            background-color: #121722;
+            border: 1px solid #1f293d;
+        }
+        .bg-dark-input {
+            background-color: #182030;
+            border: 1px solid #2a364f;
+            color: #f8fafc;
+        }
+        .bg-dark-input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+        .badge-grave {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .badge-moderado {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-leve {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER / BARRA INSTITUCIONAL -->
+    <header class="bg-dark-card sticky top-0 z-40 shadow-xl border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="210 70" />
+                        <path d="M 32 60 C 25 40, 50 15, 70 30 C 60 45, 45 65, 32 60 Z" fill="#22c55e" />
+                        <path d="M 40 55 C 35 45, 55 25, 68 35 C 58 48, 48 58, 40 55 Z" fill="#15803d" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wider text-green-500 uppercase font-sans">ECODENÚNCIA</h1>
+                    <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">Sistema de Monitoria Ambiental</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button onclick="abrirModalDenuncia()" class="bg-green-600 hover:bg-green-500 text-white font-semibold px-5 py-2.5 rounded-lg flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                    <span>Fazer Denúncia</span>
+                </button>
+
+                <a href="admin.html" class="text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 px-3 py-2 rounded-lg flex items-center space-x-1 transition">
+                    <i data-lucide="lock" class="w-4 h-4 text-green-400"></i>
+                    <span>Área Administrativa</span>
+                </a>
+
+                <div id="user-status-container" class="border-l border-gray-700 pl-4 flex items-center space-x-3">
+                    <div id="user-guest-view" class="flex items-center space-x-2">
+                        <button onclick="abrirModalAuth('login')" class="text-sm font-medium text-gray-300 hover:text-white transition px-3 py-1.5 rounded-md hover:bg-gray-800">
+                            Entrar
+                        </button>
+                        <button onclick="abrirModalAuth('register')" class="text-sm font-medium bg-gray-800 hover:bg-gray-700 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-md transition">
+                            Criar Conta
+                        </button>
+                    </div>
+
+                    <div id="user-logged-view" class="hidden flex items-center space-x-3">
+                        <div class="text-right">
+                            <span id="user-display-name" class="block text-sm font-semibold text-gray-200">Cidadão Autenticado</span>
+                            <span class="block text-xs text-green-400 font-mono">Conta Verificada</span>
+                        </div>
+                        <button onclick="terminarSessao()" class="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg transition" title="Sair da Conta">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAINEL PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <div class="bg-gradient-to-r from-green-950/40 via-dark-card to-dark-card p-6 rounded-xl border border-green-800/30 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-900/50 text-green-400 border border-green-700/50 mb-2">
+                    Base de Dados Online em Tempo Real (Firebase)
+                </span>
+                <h2 class="text-xl font-bold text-white">Portal Nacional de Reporte de Infracções Ambientais</h2>
+                <p class="text-sm text-gray-400 mt-1 max-w-3xl">
+                    Canal centralizado para submissão, georreferenciação e encaminhamento de crimes ambientais às autoridades competentes.
+                </p>
+            </div>
+            <div class="flex items-center space-x-6 text-sm text-gray-300 bg-black/30 p-4 rounded-lg border border-gray-800">
+                <div class="text-center">
+                    <span id="stat-total" class="block text-xl font-bold text-green-400">0</span>
+                    <span class="text-xs text-gray-400">Ocorrências</span>
+                </div>
+                <div class="w-px h-8 bg-gray-700"></div>
+                <div class="text-center">
+                    <span id="stat-sofala" class="block text-xl font-bold text-green-400">0</span>
+                    <span class="text-xs text-gray-400">Sofala / Beira</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTROS TÉCNICOS E PESQUISA -->
+        <section class="bg-dark-card p-5 rounded-xl mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Pesquisar por Palavra-Chave</label>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-500"></i>
+                        <input type="text" id="filtro-termo" oninput="aplicarFiltros()" placeholder="Ex: Mangal, Efluentes, Munhava..." class="w-full bg-dark-input pl-9 pr-3 py-2 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Província</label>
+                    <select id="filtro-provincia" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                        <option value="">Todas as Províncias</option>
+                        <option value="Sofala">Sofala</option>
+                        <option value="Maputo Cidade">Maputo Cidade</option>
+                        <option value="Maputo Província">Maputo Província</option>
+                        <option value="Gaza">Gaza</option>
+                        <option value="Inhambane">Inhambane</option>
+                        <option value="Manica">Manica</option>
+                        <option value="Tete">Tete</option>
+                        <option value="Zambézia">Zambézia</option>
+                        <option value="Nampula">Nampula</option>
+                        <option value="Cabo Delgado">Cabo Delgado</option>
+                        <option value="Niassa">Niassa</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Tipologia da Infracção</label>
+                    <select id="filtro-categoria" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                        <option value="">Todas as Tipologias</option>
+                        <option value="Destruição de Ecossistemas Costeiros e Mangal">Destruição de Mangal / Zona Costeira</option>
+                        <option value="Poluição de Recursos Hídricos">Poluição Hídrica / Efluentes</option>
+                        <option value="Exploração Florestal Ilegal">Exploração Florestal Ilegal</option>
+                        <option value="Deposição Inadequada de Resíduos">Deposição Ilegal de Resíduos Sólidos</option>
+                        <option value="Mineração Clandestina">Mineração Clandestina</option>
+                        <option value="Caça Furtiva e Abate Ilegal">Caça Furtiva / Fauna Protegida</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Estado de Triagem</label>
+                    <select id="filtro-estado" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                        <option value="">Todos os Estados</option>
+                        <option value="Em Triagem Técnica">Em Triagem Técnica</option>
+                        <option value="Encaminhado à Inspecção">Encaminhado à Inspecção</option>
+                        <option value="Notificado / Sancionado">Notificado / Sancionado</option>
+                        <option value="Resolvido / Mitigado">Resolvido / Mitigado</option>
+                    </select>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- LISTA DE OCORRÊNCIAS -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-green-500"></i>
+                    <span>Registo de Processos Ambientais em Tempo Real</span>
+                </h3>
+                <span id="contador-resultados" class="text-xs text-gray-400 font-mono">A ligar ao Firebase...</span>
+            </div>
+
+            <div id="lista-denuncias" class="grid grid-cols-1 gap-4">
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-dark-card border-t border-gray-800 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
+            <p>© 2026 ECODENÚNCIA - Plataforma de Protecção Ambiental em Tempo Real.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL FAZER DENÚNCIA -->
+    <div id="modal-denuncia" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-dark-card w-full max-w-3xl rounded-2xl border border-gray-800 shadow-2xl overflow-hidden my-8">
+            <div class="bg-gray-900 px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-green-500/10 text-green-500 rounded-lg">
+                        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Fazer Denúncia Ambiental</h3>
+                        <p class="text-xs text-gray-400">Preencha os dados técnicos da infracção identificada</p>
+                    </div>
+                </div>
+                <button onclick="fecharModalDenuncia()" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <form id="form-denuncia" onsubmit="submeterDenuncia(event)" class="p-6 space-y-6">
+                <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                        <label class="text-sm font-semibold text-white block">Modalidade de Identificação</label>
+                        <p class="text-xs text-gray-400">Escolha se deseja manter o anonimato perante o processo</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="modo_anonimo" value="anonimo" checked onchange="atualizarModoAnonimo()" class="text-green-500 focus:ring-green-500">
+                            <span class="ml-2 text-xs font-medium text-gray-200">Denúncia Anónima</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="modo_anonimo" value="identificado" onchange="atualizarModoAnonimo()" class="text-green-500 focus:ring-green-500">
+                            <span class="ml-2 text-xs font-medium text-gray-200">Identificar Requerente</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="alerta-identificacao" class="text-xs bg-blue-950/40 border border-blue-800/40 text-blue-300 p-3 rounded-lg flex items-start space-x-2">
+                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    <span><strong>Garantia de Anonimato:</strong> A sua denúncia será registada sob um código encriptado sem associação visível a dados pessoais no mural público.</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Título Resumido da Infracção *</label>
+                    <input type="text" id="denuncia-titulo" required placeholder="Ex: Abate ilegal de mangal e deposição de entulho" class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tipologia da Infracção Ambiental *</label>
+                        <select id="denuncia-categoria" onchange="verificarCategoriaCustomizada()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            <option value="">Selecione a Tipologia...</option>
+                            <option value="Destruição de Ecossistemas Costeiros e Mangal">Destruição de Mangal / Zona Costeira</option>
+                            <option value="Poluição de Recursos Hídricos">Poluição Hídrica / Descarga de Efluentes</option>
+                            <option value="Exploração Florestal Ilegal">Exploração Florestal / Abate de Madeira</option>
+                            <option value="Deposição Inadequada de Resíduos">Deposição Ilegal de Resíduos Sólidos</option>
+                            <option value="Mineração Clandestina">Mineração Clandestina e Erosão</option>
+                            <option value="Caça Furtiva e Abate Ilegal">Caça Furtiva / Tráfico de Fauna</option>
+                            <option value="Outra">Outra (Especificar no campo abaixo...)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Nível de Impacto Ecológico *</label>
+                        <select id="denuncia-gravidade" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            <option value="Leve">Baixo - Infracção Leve / Reversível</option>
+                            <option value="Moderado" selected>Moderado - Danos Médios ao Ecossistema</option>
+                            <option value="Grave">Crítico - Risco Emergencial / Grave Impacto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="container-categoria-custom" class="hidden">
+                    <label class="block text-xs font-semibold text-green-400 mb-1">Especifique a Tipologia Personalizada *</label>
+                    <input type="text" id="denuncia-categoria-custom" placeholder="Escreva aqui a descrição exata da tipologia..." class="w-full bg-dark-input border-green-500/50 px-3 py-2.5 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">
+                        Evidência Fotográfica do Local <span class="text-green-400 font-normal">(Opcional, mas altamente recomendado)</span>
+                    </label>
+                    <input type="file" id="denuncia-imagem-input" accept="image/*" onchange="previewImagem(event)" class="w-full bg-dark-input px-3 py-2 text-xs rounded-lg text-gray-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer">
+                    <div id="preview-container" class="mt-3 hidden">
+                        <span class="block text-[11px] text-gray-400 mb-1">Pré-visualização da fotografia anexa:</span>
+                        <img id="preview-img" src="" alt="Pré-visualização" class="h-40 w-auto object-cover rounded-lg border border-gray-700 shadow-md">
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-800 pt-4">
+                    <h4 class="text-xs font-bold text-green-400 uppercase tracking-wider mb-3 flex items-center space-x-1">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        <span>Georreferenciação Administrativa</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Província *</label>
+                            <select id="denuncia-provincia" onchange="carregarDistritos()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                                <option value="Sofala" selected>Sofala</option>
+                                <option value="Maputo Cidade">Maputo Cidade</option>
+                                <option value="Maputo Província">Maputo Província</option>
+                                <option value="Gaza">Gaza</option>
+                                <option value="Inhambane">Inhambane</option>
+                                <option value="Manica">Manica</option>
+                                <option value="Tete">Tete</option>
+                                <option value="Zambézia">Zambézia</option>
+                                <option value="Nampula">Nampula</option>
+                                <option value="Cabo Delgado">Cabo Delgado</option>
+                                <option value="Niassa">Niassa</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Distrito / Município *</label>
+                            <select id="denuncia-distrito" onchange="carregarBairros()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Bairro *</label>
+                            <select id="denuncia-bairro" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Rua, Avenida ou Ponto de Referência Próximo *</label>
+                        <input type="text" id="denuncia-rua" required placeholder="Ex: Av. Krus Gomes, próximo ao Canal de Chiveve" class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Descrição Pormenorizada dos Factos *</label>
+                    <textarea id="denuncia-descricao" rows="4" required placeholder="Descreva os detalhes da infração..." class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 border-t border-gray-800 pt-4">
+                    <button type="button" onclick="fecharModalDenuncia()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btn-submit-denuncia" class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-green-600 hover:bg-green-500 text-white flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        <span>Submeter Denúncia</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL AUTH -->
+    <div id="modal-auth" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-card w-full max-w-md rounded-2xl border border-gray-800 shadow-2xl overflow-hidden p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="auth-title" class="text-xl font-bold text-white">Aceder à Plataforma</h3>
+                <button onclick="fecharModalAuth()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <form id="form-auth" onsubmit="executarAutenticacao(event)" class="space-y-4">
+                <div id="auth-nome-group" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nome Completo</label>
+                    <input type="text" id="auth-nome" placeholder="Seu nome completo" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Endereço de E-mail</label>
+                    <input type="email" id="auth-email" required placeholder="exemplo@dominio.co.mz" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Palavra-passe</label>
+                    <input type="password" id="auth-senha" required placeholder="••••••••" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                </div>
+
+                <button type="submit" id="auth-btn-submit" class="w-full py-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg text-sm transition mt-2">
+                    Entrar na Conta
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <button id="auth-toggle-btn" onclick="alternarModoAuth()" class="text-xs text-green-400 hover:underline">
+                    Ainda não tem conta? Registe-se aqui.
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT & FIREBASE -->
+    <script>
+        // CONFIGURAÇÃO REAL DO FIREBASE DO UTILIZADOR
+        const firebaseConfig = {
+            apiKey: "AIzaSyBok4mjESDfXMFeG7on9-8XHTNLp_ve2W4",
+            authDomain: "ecodenuncias-web.firebaseapp.com",
+            projectId: "ecodenuncias-web",
+            storageBucket: "ecodenuncias-web.firebasestorage.app",
+            messagingSenderId: "852532120207",
+            appId: "1:852532120207:web:a9e25db60fbcab4444fefa"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const MOZAMBIQUE_LOCATIONS = {
+            "Sofala": {
+                "Cidade da Beira": ["Ponta Gêa", "Macuti", "Estoril", "Chaimite", "Matacuane", "Macurungo", "Manga", "Munhava", "Inhamízua", "Vaz", "Nhangau", "Alto da Manga", "Chota", "Palmeiras I", "Palmeiras II"],
+                "Dondo": ["Dondo Sede", "Mafambisse", "Chinamuato", "Savane"],
+                "Nhamatanda": ["Sede", "Lamego", "Machinguri"],
+                "Búzi": ["Sede", "Nova Sofala", "Estaquinha"],
+                "Gorongosa": ["Gorongosa Sede", "Vanduzi"],
+                "Caia": ["Caia Sede", "Sena"]
+            },
+            "Maputo Cidade": { "KaMpfumo": ["Polana Cimento A"], "Nlhamankulu": ["Chamanculo A"] },
+            "Maputo Província": { "Matola": ["Matola A", "Machava"] },
+            "Gaza": { "Xai-Xai": ["Xai-Xai Sede"] },
+            "Inhambane": { "Inhambane (Cidade)": ["Balane"] },
+            "Manica": { "Chimoio": ["Chimoio Sede"] },
+            "Tete": { "Tete (Cidade)": ["Degue"] },
+            "Zambézia": { "Quelimane": ["Quelimane Sede"] },
+            "Nampula": { "Nampula (Cidade)": ["Central"] },
+            "Cabo Delgado": { "Pemba": ["Cariacó"] },
+            "Niassa": { "Lichinga": ["Lichinga Sede"] }
+        };
+
+        let denuncias = [];
+        let utilizadorAtual = JSON.parse(localStorage.getItem('ecodenuncia_user')) || null;
+        let modoAuth = 'login';
+        let imagemBase64 = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            carregarDistritos();
+            atualizarEstadoUtilizador();
+            escutarDenunciasFirebase();
+        });
+
+        // ESCUTAR ALTERAÇÕES EM TEMPO REAL NO CLOUD FIRESTORE
+        function escutarDenunciasFirebase() {
+            db.collection('denuncias').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                denuncias = snapshot.docs.map(doc => doc.data());
+                aplicarFiltros();
+            }, error => {
+                console.error("Erro ao carregar dados do Firebase:", error);
+            });
+        }
+
+        function previewImagem(event) {
+            const file = event.target.files[0];
+            const container = document.getElementById('preview-container');
+            const img = document.getElementById('preview-img');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagemBase64 = e.target.result;
+                    img.src = imagemBase64;
+                    container.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagemBase64 = '';
+                container.classList.add('hidden');
+            }
+        }
+
+        function verificarCategoriaCustomizada() {
+            const selectCat = document.getElementById('denuncia-categoria');
+            const customContainer = document.getElementById('container-categoria-custom');
+            const customInput = document.getElementById('denuncia-categoria-custom');
+
+            if (selectCat.value === 'Outra') {
+                customContainer.classList.remove('hidden');
+                customInput.setAttribute('required', 'true');
+            } else {
+                customContainer.classList.add('hidden');
+                customInput.removeAttribute('required');
+            }
+        }
+
+        function carregarDistritos() {
+            const provSelect = document.getElementById('denuncia-provincia').value;
+            const distSelect = document.getElementById('denuncia-distrito');
+            distSelect.innerHTML = '';
+
+            if (MOZAMBIQUE_LOCATIONS[provSelect]) {
+                Object.keys(MOZAMBIQUE_LOCATIONS[provSelect]).forEach(dist => {
+                    const opt = document.createElement('option');
+                    opt.value = dist;
+                    opt.textContent = dist;
+                    distSelect.appendChild(opt);
+                });
+            }
+            carregarBairros();
+        }
+
+        function carregarBairros() {
+            const provSelect = document.getElementById('denuncia-provincia').value;
+            const distSelect = document.getElementById('denuncia-distrito').value;
+            const bairroSelect = document.getElementById('denuncia-bairro');
+            bairroSelect.innerHTML = '';
+
+            if (MOZAMBIQUE_LOCATIONS[provSelect] && MOZAMBIQUE_LOCATIONS[provSelect][distSelect]) {
+                MOZAMBIQUE_LOCATIONS[provSelect][distSelect].forEach(bairro => {
+                    const opt = document.createElement('option');
+                    opt.value = bairro;
+                    opt.textContent = bairro;
+                    bairroSelect.appendChild(opt);
+                });
+            }
+        }
+
+        function abrirModalDenuncia() {
+            document.getElementById('modal-denuncia').classList.remove('hidden');
+        }
+
+        function fecharModalDenuncia() {
+            document.getElementById('modal-denuncia').classList.add('hidden');
+        }
+
+        function atualizarModoAnonimo() {
+            const modo = document.querySelector('input[name="modo_anonimo"]:checked').value;
+            const alerta = document.getElementById('alerta-identificacao');
+            if (modo === 'anonimo') {
+                alerta.style.display = 'flex';
+            } else {
+                if (!utilizadorAtual) {
+                    alert('Aviso: Para identificar o requerente, por favor inicie sessão primeiro.');
+                    document.querySelector('input[name="modo_anonimo"][value="anonimo"]').checked = true;
+                    return;
+                }
+                alerta.style.display = 'none';
+            }
+        }
+
+        async function submeterDenuncia(e) {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btn-submit-denuncia');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "A enviar para a nuvem...";
+
+            const modoAnonimo = document.querySelector('input[name="modo_anonimo"]:checked').value;
+            const provincia = document.getElementById('denuncia-provincia').value;
+            
+            let categoriaSelecionada = document.getElementById('denuncia-categoria').value;
+            if (categoriaSelecionada === 'Outra') {
+                categoriaSelecionada = document.getElementById('denuncia-categoria-custom').value.trim() || 'Outra (Não Especificada)';
+            }
+
+            const idCodigo = `ECO-MZ-${provincia.substring(0,3).toUpperCase()}-2026-${Math.floor(100 + Math.random() * 900)}`;
+
+            const novaOcorrencia = {
+                id: idCodigo,
+                titulo: document.getElementById('denuncia-titulo').value,
+                categoria: categoriaSelecionada,
+                provincia: provincia,
+                distrito: document.getElementById('denuncia-distrito').value,
+                bairro: document.getElementById('denuncia-bairro').value,
+                rua: document.getElementById('denuncia-rua').value,
+                gravidade: document.getElementById('denuncia-gravidade').value,
+                descricao: document.getElementById('denuncia-descricao').value,
+                requerente: modoAnonimo === 'identificado' ? (utilizadorAtual ? utilizadorAtual.nome : 'Identificado') : 'Anónimo',
+                nomeIdentificado: utilizadorAtual ? utilizadorAtual.nome : 'Não registado (Anónimo)',
+                data: new Date().toISOString().split('T')[0],
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                estado: 'Em Triagem Técnica',
+                votos: 1,
+                imagem: imagemBase64
+            };
+
+            try {
+                // GRAVAR NO CLOUD FIRESTORE ONLINE
+                await db.collection('denuncias').doc(idCodigo).set(novaOcorrencia);
+
+                fecharModalDenuncia();
+                document.getElementById('form-denuncia').reset();
+                document.getElementById('preview-container').classList.add('hidden');
+                imagemBase64 = '';
+                verificarCategoriaCustomizada();
+                carregarDistritos();
+
+                alert(`Denúncia gravada com sucesso na nuvem!\nCódigo do Processo: ${novaOcorrencia.id}`);
+            } catch (err) {
+                console.error("Erro ao guardar denúncia:", err);
+                alert("Ocorreu um erro ao enviar para a nuvem. Tente novamente.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Submeter Denúncia</span>`;
+                lucide.createIcons();
+            }
+        }
+
+        function aplicarFiltros() {
+            const termo = document.getElementById('filtro-termo').value.toLowerCase();
+            const provincia = document.getElementById('filtro-provincia').value;
+            const categoria = document.getElementById('filtro-categoria').value;
+            const estado = document.getElementById('filtro-estado').value;
+
+            const filtrados = denuncias.filter(item => {
+                const matchTermo = (item.titulo || '').toLowerCase().includes(termo) || 
+                                  (item.descricao || '').toLowerCase().includes(termo) ||
+                                  (item.bairro || '').toLowerCase().includes(termo) ||
+                                  (item.rua || '').toLowerCase().includes(termo);
+                const matchProv = !provincia || item.provincia === provincia;
+                const matchCat = !categoria || item.categoria === categoria;
+                const matchEst = !estado || item.estado === estado;
+
+                return matchTermo && matchProv && matchCat && matchEst;
+            });
+
+            renderizarLista(filtrados);
+            atualizarEstatisticas();
+        }
+
+        function renderizarLista(lista) {
+            const container = document.getElementById('lista-denuncias');
+            const contador = document.getElementById('contador-resultados');
+            contador.textContent = `Mostrando ${lista.length} processos registados online`;
+
+            if (lista.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-dark-card p-12 text-center rounded-xl border border-gray-800">
+                        <i data-lucide="folder-search" class="w-12 h-12 text-gray-600 mx-auto mb-3"></i>
+                        <p class="text-gray-400 font-medium">Nenhum processo localizado na base de dados.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = lista.map(item => {
+                let badgeClass = 'badge-leve';
+                if (item.gravidade === 'Grave') badgeClass = 'badge-grave';
+                if (item.gravidade === 'Moderado') badgeClass = 'badge-moderado';
+
+                return `
+                    <article class="bg-dark-card p-6 rounded-xl border border-gray-800 hover:border-gray-700 transition">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-mono text-xs font-bold text-green-400 bg-green-950/60 px-2.5 py-1 rounded border border-green-800/40">
+                                    ${item.id}
+                                </span>
+                                <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${badgeClass}">
+                                    Impacto: ${item.gravidade}
+                                </span>
+                                <span class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-full font-medium">
+                                    ${item.estado}
+                                </span>
+                            </div>
+                            <span class="text-xs text-gray-500 font-mono">Data: ${item.data}</span>
+                        </div>
+
+                        <h4 class="text-lg font-bold text-white mb-1">${item.titulo}</h4>
+                        <p class="text-xs text-green-400 font-semibold mb-3">Tipologia: ${item.categoria}</p>
+                        
+                        <p class="text-sm text-gray-300 mb-4 leading-relaxed">${item.descricao}</p>
+
+                        ${item.imagem ? `
+                            <div class="mb-4">
+                                <span class="block text-[11px] font-semibold text-gray-400 mb-1 flex items-center space-x-1">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5 text-green-400"></i>
+                                    <span>Evidência Fotográfica Anexa:</span>
+                                </span>
+                                <img src="${item.imagem}" alt="Foto da ocorrência" class="h-48 w-auto max-w-full object-cover rounded-lg border border-gray-800 shadow-md">
+                            </div>
+                        ` : ''}
+
+                        <div class="bg-gray-900/80 p-3 rounded-lg border border-gray-800/80 text-xs text-gray-300 grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                            <div><strong class="text-gray-400">Província / Distrito:</strong> ${item.provincia} - ${item.distrito}</div>
+                            <div><strong class="text-gray-400">Bairro:</strong> ${item.bairro}</div>
+                            <div class="sm:col-span-2"><strong class="text-gray-400">Endereço / Referência:</strong> ${item.rua}</div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-800 text-xs text-gray-400">
+                            <div class="flex items-center space-x-2">
+                                <i data-lucide="user-check" class="w-4 h-4 text-green-500"></i>
+                                <span>Requerente: <strong>${item.requerente}</strong></span>
+                            </div>
+
+                            <button onclick="apoiarProcesso('${item.id}')" class="flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 text-green-400 px-3 py-1.5 rounded-lg border border-gray-700 transition">
+                                <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
+                                <span>Apoiar Requerimento (${item.votos || 1})</span>
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        async function apoiarProcesso(id) {
+            try {
+                const docRef = db.collection('denuncias').doc(id);
+                await docRef.update({
+                    votos: firebase.firestore.FieldValue.increment(1)
+                });
+            } catch (err) {
+                console.error("Erro ao apoiar denúncia:", err);
+            }
+        }
+
+        function atualizarEstatisticas() {
+            document.getElementById('stat-total').textContent = denuncias.length;
+            const sofalaCount = denuncias.filter(d => d.provincia === 'Sofala').length;
+            document.getElementById('stat-sofala').textContent = sofalaCount;
+        }
+
+        function abrirModalAuth(modo) {
+            modoAuth = modo;
+            document.getElementById('modal-auth').classList.remove('hidden');
+            const groupNome = document.getElementById('auth-nome-group');
+            const title = document.getElementById('auth-title');
+            const btnSubmit = document.getElementById('auth-btn-submit');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+
+            if (modo === 'register') {
+                title.textContent = 'Criar Conta de Cidadão';
+                groupNome.classList.remove('hidden');
+                btnSubmit.textContent = 'Efetuar Registo';
+                toggleBtn.textContent = 'Já possui conta? Inicie sessão.';
+            } else {
+                title.textContent = 'Aceder à Plataforma';
+                groupNome.classList.add('hidden');
+                btnSubmit.textContent = 'Entrar na Conta';
+                toggleBtn.textContent = 'Ainda não tem conta? Registe-se aqui.';
+            }
+        }
+
+        function fecharModalAuth() {
+            document.getElementById('modal-auth').classList.add('hidden');
+        }
+
+        function alternarModoAuth() {
+            abrirModalAuth(modoAuth === 'login' ? 'register' : 'login');
+        }
+
+        function executarAutenticacao(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const nome = document.getElementById('auth-nome').value || email.split('@')[0];
+
+            utilizadorAtual = { nome: nome, email: email };
+            localStorage.setItem('ecodenuncia_user', JSON.stringify(utilizadorAtual));
+
+            atualizarEstadoUtilizador();
+            fecharModalAuth();
+            alert(`Sessão iniciada com sucesso. Bem-vindo(a), ${nome}!`);
+        }
+
+        function terminarSessao() {
+            utilizadorAtual = null;
+            localStorage.removeItem('ecodenuncia_user');
+            atualizarEstadoUtilizador();
+        }
+
+        function atualizarEstadoUtilizador() {
+            const guestView = document.getElementById('user-guest-view');
+            const loggedView = document.getElementById('user-logged-view');
+            const nameDisplay = document.getElementById('user-display-name');
+
+            if (utilizadorAtual) {
+                guestView.classList.add('hidden');
+                loggedView.classList.remove('hidden');
+                nameDisplay.textContent = utilizadorAtual.nome;
+            } else {
+                guestView.classList.remove('hidden');
+                loggedView.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
