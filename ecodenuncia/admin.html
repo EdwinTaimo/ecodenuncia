@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECODENÚNCIA - Painel de Administração e Auditoria</title>
+    <title>ECODENÚNCIA - Painel de Administração e Auditoria (Firebase)</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,6 +20,10 @@
     <!-- jsPDF & AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <style>
         body {
@@ -77,16 +81,14 @@
         </div>
     </div>
 
-
     <!-- PAINEL PRINCIPAL DO ADMINISTRADOR -->
     <div id="admin-dashboard" class="hidden min-h-screen flex flex-col">
         
-        <!-- HEADER ADMIN -->
         <header class="bg-dark-card border-b border-gray-800 sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <span class="bg-green-500/20 text-green-400 text-xs font-mono font-bold px-2.5 py-1 rounded border border-green-500/30">ADMIN</span>
-                    <h1 class="text-xl font-bold text-white">ECODENÚNCIA - Gestão e Auditoria</h1>
+                    <h1 class="text-xl font-bold text-white">ECODENÚNCIA - Gestão na Nuvem</h1>
                 </div>
 
                 <div class="flex items-center space-x-3">
@@ -104,7 +106,6 @@
             </div>
         </header>
 
-        <!-- NAVEGAÇÃO ENTRE MÓDULOS -->
         <div class="bg-gray-900/60 border-b border-gray-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6">
                 <button onclick="mudarAba('processos')" id="aba-btn-processos" class="py-3 text-sm font-semibold border-b-2 border-green-500 text-green-400 flex items-center space-x-2">
@@ -117,14 +118,14 @@
                 </button>
                 <button onclick="mudarAba('historico')" id="aba-btn-historico" class="py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center space-x-2">
                     <i data-lucide="history" class="w-4 h-4"></i>
-                    <span>Histórico de Alterações (Audit Log)</span>
+                    <span>Histórico de Auditoria (Firebase)</span>
                 </button>
             </div>
         </div>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
             
-            <!-- ABA 1: GESTÃO DE PROCESSOS -->
+            <!-- ABA 1: PROCESSOS -->
             <section id="conteudo-processos" class="space-y-6">
                 
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-dark-card p-4 rounded-xl">
@@ -149,7 +150,6 @@
                     </div>
                 </div>
 
-                <!-- TABELA DE DENÚNCIAS -->
                 <div class="bg-dark-card rounded-xl overflow-hidden border border-gray-800 shadow-xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
@@ -159,10 +159,10 @@
                                     <th class="p-4">Evidência</th>
                                     <th class="p-4">Título e Tipologia</th>
                                     <th class="p-4">Localização</th>
-                                    <th class="p-4">Identidade do Requerente</th>
+                                    <th class="p-4">Requerente Real</th>
                                     <th class="p-4">Impacto</th>
                                     <th class="p-4">Estado de Triagem</th>
-                                    <th class="p-4 text-center">Acções Admin</th>
+                                    <th class="p-4 text-center">Acções</th>
                                 </tr>
                             </thead>
                             <tbody id="tabela-processos-body" class="divide-y divide-gray-800 text-gray-300">
@@ -172,8 +172,7 @@
                 </div>
             </section>
 
-
-            <!-- ABA 2: ESTATÍSTICAS E GRÁFICOS -->
+            <!-- ABA 2: ESTATÍSTICAS -->
             <section id="conteudo-estatisticas" class="hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-dark-card p-5 rounded-xl border border-gray-800">
@@ -193,21 +192,11 @@
                 </div>
             </section>
 
-
-            <!-- ABA 3: HISTÓRICO DE ALTERAÇÕES -->
+            <!-- ABA 3: HISTÓRICO DE AUDITORIA -->
             <section id="conteudo-historico" class="hidden space-y-6">
-                <div class="flex items-center justify-between bg-dark-card p-4 rounded-xl">
-                    <div>
-                        <h3 class="text-sm font-bold text-white">Registo Inalterável de Operações e Modificações</h3>
-                        <p class="text-xs text-gray-400">Histórico de auditoria de alterações de estado, eliminações e gestão de utilizadores</p>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs text-gray-400 font-semibold mr-2">Exportar Histórico:</span>
-                        <button onclick="exportarHistorico('csv')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">CSV</button>
-                        <button onclick="exportarHistorico('excel')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">Excel</button>
-                        <button onclick="exportarHistorico('pdf')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">PDF</button>
-                    </div>
+                <div class="bg-dark-card p-4 rounded-xl">
+                    <h3 class="text-sm font-bold text-white">Histórico de Alterações (Firestore Audit Log)</h3>
+                    <p class="text-xs text-gray-400">Registo na nuvem de todas as operações realizadas pelos administradores</p>
                 </div>
 
                 <div class="bg-dark-card rounded-xl overflow-hidden border border-gray-800">
@@ -215,10 +204,10 @@
                         <table class="w-full text-left text-xs">
                             <thead class="bg-gray-900 text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-800">
                                 <tr>
-                                    <th class="p-4">Carimbo de Data/Hora</th>
+                                    <th class="p-4">Data/Hora</th>
                                     <th class="p-4">Utilizador Admin</th>
-                                    <th class="p-4">Tipo de Operação</th>
-                                    <th class="p-4">Descrição Detalhada</th>
+                                    <th class="p-4">Operação</th>
+                                    <th class="p-4">Descrição</th>
                                 </tr>
                             </thead>
                             <tbody id="tabela-historico-body" class="divide-y divide-gray-800 text-gray-300 font-mono">
@@ -231,8 +220,7 @@
         </main>
     </div>
 
-
-    <!-- MODAL FOTO VISUALIZAÇÃO AMPLIADA -->
+    <!-- MODAL FOTO AMPLIADA -->
     <div id="modal-foto-ampliada" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
         <div class="relative max-w-3xl max-h-screen p-2">
             <button onclick="fecharModalFoto()" class="absolute top-4 right-4 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700">
@@ -242,8 +230,7 @@
         </div>
     </div>
 
-
-    <!-- MODAL GESTÃO DE UTILIZADORES -->
+    <!-- MODAL GESTÃO UTILIZADORES -->
     <div id="modal-utilizadores" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-dark-card w-full max-w-lg rounded-2xl border border-gray-800 p-6 space-y-6">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -263,45 +250,31 @@
                     Guardar Nova Palavra-passe
                 </button>
             </form>
-
-            <form onsubmit="adicionarNovoAdmin(event)" class="space-y-3 bg-gray-900/50 p-4 rounded-xl border border-gray-800">
-                <h4 class="text-xs font-bold text-blue-400 uppercase">Adicionar Novo Administrador</h4>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs text-gray-300 mb-1">Novo Username</label>
-                        <input type="text" id="novo-admin-user" required placeholder="ex: inspetor1" class="w-full bg-dark-input px-3 py-2 rounded-lg text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-300 mb-1">Palavra-passe Inicial</label>
-                        <input type="password" id="novo-admin-pass" required placeholder="••••••••" class="w-full bg-dark-input px-3 py-2 rounded-lg text-xs">
-                    </div>
-                </div>
-                <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">
-                    Adicionar Novo Administrador
-                </button>
-            </form>
         </div>
     </div>
 
-
-    <!-- JAVASCRIPT PAINEL ADMIN -->
+    <!-- JAVASCRIPT & FIREBASE -->
     <script>
-        let adminLogado = sessionStorage.getItem('ecodenuncia_admin_sessao') || null;
+        // CONFIGURAÇÃO REAL DO FIREBASE DO UTILIZADOR
+        const firebaseConfig = {
+            apiKey: "AIzaSyBok4mjESDfXMFeG7on9-8XHTNLp_ve2W4",
+            authDomain: "ecodenuncias-web.firebaseapp.com",
+            projectId: "ecodenuncias-web",
+            storageBucket: "ecodenuncias-web.firebasestorage.app",
+            messagingSenderId: "852532120207",
+            appId: "1:852532120207:web:a9e25db60fbcab4444fefa"
+        };
 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let adminLogado = sessionStorage.getItem('ecodenuncia_admin_sessao') || null;
         let credenciaisAdmins = JSON.parse(localStorage.getItem('ecodenuncia_admins')) || [
             { username: 'admin', pass: 'mozambique26', perfil: 'Administrador Principal' }
         ];
 
-        let denuncias = JSON.parse(localStorage.getItem('ecodenuncia_dados')) || [];
-
-        let historicoLogs = JSON.parse(localStorage.getItem('ecodenuncia_audit_logs')) || [
-            {
-                dataHora: '2026-09-28 08:30:00',
-                utilizador: 'SISTEMA',
-                operacao: 'Inicialização',
-                descricao: 'Sistema de Auditoria e Controlo de Denúncias Inicializado.'
-            }
-        ];
+        let denuncias = [];
+        let historicoLogs = [];
 
         let chartTipologiaInstance = null;
         let chartProvinciaInstance = null;
@@ -324,7 +297,7 @@
             if (encontrado) {
                 adminLogado = u;
                 sessionStorage.setItem('ecodenuncia_admin_sessao', u);
-                registrarLog('Autenticação', `Início de sessão efetuado pelo administrador "${u}".`);
+                registrarLog('Autenticação', `Início de sessão do administrador "${u}".`);
                 exibirPainel();
             } else {
                 alert('Credenciais inválidas! Verifique o Username e Senha.');
@@ -332,7 +305,7 @@
         }
 
         function terminarSessaoAdmin() {
-            registrarLog('Autenticação', `Sessão encerrada pelo utilizador "${adminLogado}".`);
+            registrarLog('Autenticação', `Sessão encerrada por "${adminLogado}".`);
             sessionStorage.removeItem('ecodenuncia_admin_sessao');
             window.location.reload();
         }
@@ -342,9 +315,23 @@
             document.getElementById('admin-dashboard').classList.remove('hidden');
             document.getElementById('admin-welcome-name').textContent = `Sessão: ${adminLogado}`;
 
-            renderizarTabelaAdmin();
-            renderizarHistorico();
+            escutarFirebase();
+            escutarLogsFirebase();
             lucide.createIcons();
+        }
+
+        function escutarFirebase() {
+            db.collection('denuncias').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                denuncias = snapshot.docs.map(doc => doc.data());
+                renderizarTabelaAdmin();
+            });
+        }
+
+        function escutarLogsFirebase() {
+            db.collection('audit_logs').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                historicoLogs = snapshot.docs.map(doc => doc.data());
+                renderizarHistorico();
+            });
         }
 
         function abrirModalGestaoUtilizadores() {
@@ -362,31 +349,11 @@
             if (idx !== -1) {
                 credenciaisAdmins[idx].pass = novaSenha;
                 localStorage.setItem('ecodenuncia_admins', JSON.stringify(credenciaisAdmins));
-                registrarLog('Segurança', `Palavra-passe alterada para o utilizador "${adminLogado}".`);
+                registrarLog('Segurança', `Palavra-passe alterada para "${adminLogado}".`);
                 alert('Palavra-passe alterada com sucesso!');
                 fecharModalGestaoUtilizadores();
                 document.getElementById('nova-senha-input').value = '';
             }
-        }
-
-        function adicionarNovoAdmin(e) {
-            e.preventDefault();
-            const novoU = document.getElementById('novo-admin-user').value.trim();
-            const novoP = document.getElementById('novo-admin-pass').value.trim();
-
-            if (credenciaisAdmins.some(a => a.username === novoU)) {
-                alert('Aviso: Este nome de utilizador já existe!');
-                return;
-            }
-
-            credenciaisAdmins.push({ username: novoU, pass: novoP, perfil: 'Administrador' });
-            localStorage.setItem('ecodenuncia_admins', JSON.stringify(credenciaisAdmins));
-
-            registrarLog('Gestão Utilizadores', `Novo administrador criado: "${novoU}".`);
-            alert(`Utilizador "${novoU}" adicionado com sucesso!`);
-            fecharModalGestaoUtilizadores();
-            document.getElementById('novo-admin-user').value = '';
-            document.getElementById('novo-admin-pass').value = '';
         }
 
         function mudarAba(aba) {
@@ -412,14 +379,14 @@
             const tbody = document.getElementById('tabela-processos-body');
 
             const filtrados = denuncias.filter(d => 
-                d.id.toLowerCase().includes(termo) ||
-                d.titulo.toLowerCase().includes(termo) ||
-                d.provincia.toLowerCase().includes(termo) ||
-                d.bairro.toLowerCase().includes(termo)
+                (d.id || '').toLowerCase().includes(termo) ||
+                (d.titulo || '').toLowerCase().includes(termo) ||
+                (d.provincia || '').toLowerCase().includes(termo) ||
+                (d.bairro || '').toLowerCase().includes(termo)
             );
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500">Nenhuma denúncia registada.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500">Nenhuma denúncia encontrada na nuvem.</td></tr>`;
                 return;
             }
 
@@ -431,13 +398,13 @@
                     </td>
                     <td class="p-4">
                         ${item.imagem ? `
-                            <img src="${item.imagem}" onclick="ampliarFoto('${item.imagem}')" class="w-12 h-12 object-cover rounded border border-gray-700 cursor-pointer hover:opacity-80 transition" title="Clique para ampliar">
+                            <img src="${item.imagem}" onclick="ampliarFoto('${item.imagem}')" class="w-12 h-12 object-cover rounded border border-gray-700 cursor-pointer hover:opacity-80 transition">
                         ` : `
                             <span class="text-gray-600 text-[10px] italic">Sem foto</span>
                         `}
                     </td>
                     <td class="p-4 max-w-xs">
-                        <strong class="text-white block truncate" title="${item.titulo}">${item.titulo}</strong>
+                        <strong class="text-white block truncate">${item.titulo}</strong>
                         <span class="text-gray-400 text-[11px]">${item.categoria}</span>
                     </td>
                     <td class="p-4">
@@ -462,7 +429,7 @@
                         </select>
                     </td>
                     <td class="p-4 text-center">
-                        <button onclick="apagarDenuncia('${item.id}')" class="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-400 rounded-lg border border-red-800/50 transition" title="Apagar Denúncia">
+                        <button onclick="apagarDenuncia('${item.id}')" class="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-400 rounded-lg border border-red-800/50 transition">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </td>
@@ -481,44 +448,43 @@
             document.getElementById('modal-foto-ampliada').classList.add('hidden');
         }
 
-        function alterarEstadoProcesso(id, novoEstado) {
-            const item = denuncias.find(d => d.id === id);
-            if (item) {
-                const estadoAntigo = item.estado;
-                item.estado = novoEstado;
-                localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
-
-                registrarLog('Alteração de Estado', `Processo "${id}": estado alterado de "${estadoAntigo}" para "${novoEstado}".`);
-                alert(`Estado do processo ${id} atualizado.`);
+        async function alterarEstadoProcesso(id, novoEstado) {
+            try {
+                await db.collection('denuncias').doc(id).update({ estado: novoEstado });
+                registrarLog('Alteração de Estado', `Processo "${id}" atualizado para "${novoEstado}".`);
+            } catch (err) {
+                console.error("Erro ao alterar estado:", err);
             }
         }
 
-        function apagarDenuncia(id) {
-            if (confirm(`Atenção: Tem a certeza que deseja apagar definitivamente o processo ${id}?`)) {
-                const item = denuncias.find(d => d.id === id);
-                denuncias = denuncias.filter(d => d.id !== id);
-                localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
-
-                registrarLog('Eliminação de Processo', `Denúncia "${id}" (${item ? item.titulo : ''}) foi eliminada definitivamente.`);
-                renderizarTabelaAdmin();
-                alert('Denúncia apagada com sucesso.');
+        async function apagarDenuncia(id) {
+            if (confirm(`Atenção: Tem a certeza que deseja apagar o processo ${id} da nuvem?`)) {
+                try {
+                    await db.collection('denuncias').doc(id).delete();
+                    registrarLog('Eliminação de Processo', `Denúncia "${id}" eliminada da nuvem.`);
+                } catch (err) {
+                    console.error("Erro ao apagar denúncia:", err);
+                }
             }
         }
 
-        function registrarLog(operacao, descricao) {
+        async function registrarLog(operacao, descricao) {
             const agora = new Date();
             const dataFormatada = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}:${String(agora.getSeconds()).padStart(2,'0')}`;
 
             const novoLog = {
                 dataHora: dataFormatada,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 utilizador: adminLogado || 'SISTEMA',
                 operacao: operacao,
                 descricao: descricao
             };
 
-            historicoLogs.unshift(novoLog);
-            localStorage.setItem('ecodenuncia_audit_logs', JSON.stringify(historicoLogs));
-            renderizarHistorico();
+            try {
+                await db.collection('audit_logs').add(novoLog);
+            } catch (err) {
+                console.error("Erro ao gravar log:", err);
+            }
         }
 
         function renderizarHistorico() {
@@ -591,49 +557,30 @@
                 Estado: d.estado
             }));
 
+            if (dados.length === 0) {
+                alert("Nenhum dado disponível para exportar.");
+                return;
+            }
+
             if (formato === 'csv') {
                 const csvRows = [Object.keys(dados[0]).join(',')];
                 dados.forEach(row => csvRows.push(Object.values(row).map(v => `"${v}"`).join(',')));
-                downloadBlob(csvRows.join('\n'), 'ecodenuncia_relatorio.csv', 'text/csv');
+                downloadBlob(csvRows.join('\n'), 'ecodenuncia_relatorio_nuvem.csv', 'text/csv');
             } else if (formato === 'excel') {
                 const ws = XLSX.utils.json_to_sheet(dados);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Denuncias');
-                XLSX.writeFile(wb, 'ecodenuncia_relatorio.xlsx');
+                XLSX.writeFile(wb, 'ecodenuncia_relatorio_nuvem.xlsx');
             } else if (formato === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('landscape');
-                doc.text("ECODENÚNCIA - Relatório Geral de Processos Ambientais", 14, 15);
+                doc.text("ECODENÚNCIA - Relatório Geral de Processos Ambientais (Nuvem)", 14, 15);
                 
-                const tableColumn = ["ID", "Data", "Título", "Província", "Bairro", "Requerente Real", "Estado"];
+                const tableColumn = ["ID", "Data", "Título", "Província", "Bairro", "Requerente", "Estado"];
                 const tableRows = dados.map(d => [d.ID, d.Data, d.Titulo, d.Provincia, d.Bairro, d.Nome_Identificado, d.Estado]);
 
                 doc.autoTable({ head: [tableColumn], body: tableRows, startY: 20 });
-                doc.save('ecodenuncia_relatorio.pdf');
-            }
-            registrarLog('Exportação', `Relatório de Denúncias exportado no formato ${formato.toUpperCase()}.`);
-        }
-
-        function exportarHistorico(formato) {
-            if (formato === 'csv') {
-                const csvRows = ["DataHora,Utilizador,Operacao,Descricao"];
-                historicoLogs.forEach(l => csvRows.push(`"${l.dataHora}","${l.utilizador}","${l.operacao}","${l.descricao}"`));
-                downloadBlob(csvRows.join('\n'), 'ecodenuncia_historico_auditoria.csv', 'text/csv');
-            } else if (formato === 'excel') {
-                const ws = XLSX.utils.json_to_sheet(historicoLogs);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'HistoricoAuditoria');
-                XLSX.writeFile(wb, 'ecodenuncia_historico_auditoria.xlsx');
-            } else if (formato === 'pdf') {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.text("ECODENÚNCIA - Registo de Auditoria de Alterações", 14, 15);
-                
-                const tableColumn = ["Data/Hora", "Utilizador", "Operação", "Descrição"];
-                const tableRows = historicoLogs.map(l => [l.dataHora, l.utilizador, l.operacao, l.descricao]);
-
-                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 20 });
-                doc.save('ecodenuncia_historico_auditoria.pdf');
+                doc.save('ecodenuncia_relatorio_nuvem.pdf');
             }
         }
 
