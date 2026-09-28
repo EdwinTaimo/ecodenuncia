@@ -14,7 +14,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -23,86 +23,87 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0b0e14;
-            color: #e2e8f0;
+            background-color: #061318;
+            color: #e2f1f8;
         }
         .bg-dark-card {
-            background-color: #121722;
-            border: 1px solid #1f293d;
+            background-color: #0d222a;
+            border: 1px solid #1a3c48;
         }
         .bg-dark-input {
-            background-color: #182030;
-            border: 1px solid #2a364f;
-            color: #f8fafc;
+            background-color: #122b35;
+            border: 1px solid #234e5e;
+            color: #f0f9ff;
         }
         .bg-dark-input:focus {
-            border-color: #22c55e;
+            border-color: #00e5ff;
             outline: none;
         }
         .badge-grave {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
         }
         .badge-moderado {
-            background-color: rgba(245, 158, 11, 0.15);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.4);
         }
         .badge-leve {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            background-color: rgba(0, 229, 255, 0.2);
+            color: #67e8f9;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+        }
+        .btn-cyan {
+            background-color: #00b4d8;
+            color: #041014;
+        }
+        .btn-cyan:hover {
+            background-color: #00e5ff;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
     <!-- HEADER / BARRA INSTITUCIONAL -->
-    <header class="bg-dark-card sticky top-0 z-40 shadow-xl border-b border-gray-800">
+    <header class="bg-dark-card sticky top-0 z-40 shadow-2xl border-b border-[#1a3c48]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
             <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
-                <div class="relative w-12 h-12 flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" class="w-full h-full">
-                        <circle cx="50" cy="50" r="44" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="210 70" />
-                        <path d="M 32 60 C 25 40, 50 15, 70 30 C 60 45, 45 65, 32 60 Z" fill="#22c55e" />
-                        <path d="M 40 55 C 35 45, 55 25, 68 35 C 58 48, 48 58, 40 55 Z" fill="#15803d" />
-                    </svg>
-                </div>
+                <img src="Modern Earth Energy Logo (1).jpg" alt="ECODENÚNCIA Logo" class="h-12 w-auto object-contain rounded-lg shadow-md border border-teal-800/50">
                 <div>
-                    <h1 class="text-2xl font-black tracking-wider text-green-500 uppercase font-sans">ECODENÚNCIA</h1>
-                    <p class="text-xs text-gray-400 font-medium uppercase tracking-widest">Sistema de Monitoria Ambiental</p>
+                    <h1 class="text-2xl font-black tracking-wider text-cyan-400 uppercase font-sans">ECODENÚNCIA</h1>
+                    <p class="text-[10px] text-teal-300 font-medium uppercase tracking-widest">Sistema de Monitoria Ambiental</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-4">
-                <button onclick="abrirModalDenuncia()" class="bg-green-600 hover:bg-green-500 text-white font-semibold px-5 py-2.5 rounded-lg flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
+                <button onclick="abrirModalDenuncia()" class="btn-cyan font-bold px-5 py-2.5 rounded-xl flex items-center space-x-2 transition shadow-lg shadow-cyan-950/50">
                     <i data-lucide="shield-alert" class="w-5 h-5"></i>
                     <span>Fazer Denúncia</span>
                 </button>
 
-                <a href="admin.html" class="text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 px-3 py-2 rounded-lg flex items-center space-x-1 transition">
-                    <i data-lucide="lock" class="w-4 h-4 text-green-400"></i>
+                <a href="admin.html" class="text-xs font-semibold bg-[#122b35] hover:bg-[#1a3c48] text-teal-200 border border-teal-700/50 px-3 py-2 rounded-xl flex items-center space-x-1.5 transition">
+                    <i data-lucide="lock" class="w-4 h-4 text-cyan-400"></i>
                     <span>Área Administrativa</span>
                 </a>
 
-                <div id="user-status-container" class="border-l border-gray-700 pl-4 flex items-center space-x-3">
+                <div id="user-status-container" class="border-l border-teal-800/60 pl-4 flex items-center space-x-3">
                     <div id="user-guest-view" class="flex items-center space-x-2">
-                        <button onclick="abrirModalAuth('login')" class="text-sm font-medium text-gray-300 hover:text-white transition px-3 py-1.5 rounded-md hover:bg-gray-800">
+                        <button onclick="abrirModalAuth('login')" class="text-xs font-semibold text-teal-200 hover:text-white transition px-3 py-2 rounded-lg hover:bg-[#122b35]">
                             Entrar
                         </button>
-                        <button onclick="abrirModalAuth('register')" class="text-sm font-medium bg-gray-800 hover:bg-gray-700 text-green-400 border border-green-500/30 px-3 py-1.5 rounded-md transition">
+                        <button onclick="abrirModalAuth('register')" class="text-xs font-bold bg-[#163a46] hover:bg-[#1e4a5a] text-cyan-300 border border-cyan-500/30 px-3 py-2 rounded-lg transition">
                             Criar Conta
                         </button>
                     </div>
 
                     <div id="user-logged-view" class="hidden flex items-center space-x-3">
                         <div class="text-right">
-                            <span id="user-display-name" class="block text-sm font-semibold text-gray-200">Cidadão Autenticado</span>
-                            <span class="block text-xs text-green-400 font-mono">Conta Verificada</span>
+                            <span id="user-display-name" class="block text-xs font-bold text-cyan-300">Cidadão</span>
+                            <span class="block text-[10px] text-teal-400 font-mono">Conta Firebase</span>
                         </div>
-                        <button onclick="terminarSessao()" class="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg transition" title="Sair da Conta">
+                        <button onclick="terminarSessao()" class="p-2 text-teal-400 hover:text-red-400 hover:bg-[#122b35] rounded-lg transition" title="Sair da Conta">
                             <i data-lucide="log-out" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -114,44 +115,44 @@
     <!-- PAINEL PRINCIPAL -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
         
-        <div class="bg-gradient-to-r from-green-950/40 via-dark-card to-dark-card p-6 rounded-xl border border-green-800/30 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="bg-gradient-to-r from-[#0d2e38] via-dark-card to-dark-card p-6 rounded-2xl border border-teal-700/40 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
             <div>
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-900/50 text-green-400 border border-green-700/50 mb-2">
-                    Base de Dados Online em Tempo Real (Firebase)
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-teal-950/80 text-cyan-400 border border-teal-600/50 mb-2">
+                    Base de Dados Online em Tempo Real (Firebase Firestore)
                 </span>
-                <h2 class="text-xl font-bold text-white">Portal Nacional de Reporte de Infracções Ambientais</h2>
-                <p class="text-sm text-gray-400 mt-1 max-w-3xl">
+                <h2 class="text-xl font-black text-white">Portal Nacional de Reporte de Infracções Ambientais</h2>
+                <p class="text-xs text-teal-200/80 mt-1 max-w-3xl">
                     Canal centralizado para submissão, georreferenciação e encaminhamento de crimes ambientais às autoridades competentes.
                 </p>
             </div>
-            <div class="flex items-center space-x-6 text-sm text-gray-300 bg-black/30 p-4 rounded-lg border border-gray-800">
+            <div class="flex items-center space-x-6 text-sm text-teal-100 bg-black/40 p-4 rounded-xl border border-teal-800/60">
                 <div class="text-center">
-                    <span id="stat-total" class="block text-xl font-bold text-green-400">0</span>
-                    <span class="text-xs text-gray-400">Ocorrências</span>
+                    <span id="stat-total" class="block text-2xl font-black text-cyan-400">0</span>
+                    <span class="text-[10px] text-teal-300 uppercase tracking-wider">Ocorrências</span>
                 </div>
-                <div class="w-px h-8 bg-gray-700"></div>
+                <div class="w-px h-8 bg-teal-800/80"></div>
                 <div class="text-center">
-                    <span id="stat-sofala" class="block text-xl font-bold text-green-400">0</span>
-                    <span class="text-xs text-gray-400">Sofala / Beira</span>
+                    <span id="stat-sofala" class="block text-2xl font-black text-teal-300">0</span>
+                    <span class="text-[10px] text-teal-300 uppercase tracking-wider">Sofala / Beira</span>
                 </div>
             </div>
         </div>
 
         <!-- FILTROS TÉCNICOS E PESQUISA -->
-        <section class="bg-dark-card p-5 rounded-xl mb-8">
+        <section class="bg-dark-card p-5 rounded-2xl mb-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Pesquisar por Palavra-Chave</label>
+                    <label class="block text-xs font-semibold text-teal-300 mb-1">Pesquisar por Palavra-Chave</label>
                     <div class="relative">
-                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-500"></i>
-                        <input type="text" id="filtro-termo" oninput="aplicarFiltros()" placeholder="Ex: Mangal, Efluentes, Munhava..." class="w-full bg-dark-input pl-9 pr-3 py-2 rounded-lg text-sm">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-teal-500"></i>
+                        <input type="text" id="filtro-termo" oninput="aplicarFiltros()" placeholder="Ex: Mangal, Efluentes, Munhava..." class="w-full bg-dark-input pl-9 pr-3 py-2 rounded-xl text-xs">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Província</label>
-                    <select id="filtro-provincia" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-300 mb-1">Província</label>
+                    <select id="filtro-provincia" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-xl text-xs">
                         <option value="">Todas as Províncias</option>
                         <option value="Sofala">Sofala</option>
                         <option value="Maputo Cidade">Maputo Cidade</option>
@@ -168,8 +169,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Tipologia da Infracção</label>
-                    <select id="filtro-categoria" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-300 mb-1">Tipologia da Infracção</label>
+                    <select id="filtro-categoria" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-xl text-xs">
                         <option value="">Todas as Tipologias</option>
                         <option value="Destruição de Ecossistemas Costeiros e Mangal">Destruição de Mangal / Zona Costeira</option>
                         <option value="Poluição de Recursos Hídricos">Poluição Hídrica / Efluentes</option>
@@ -181,8 +182,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Estado de Triagem</label>
-                    <select id="filtro-estado" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-300 mb-1">Estado de Triagem</label>
+                    <select id="filtro-estado" onchange="aplicarFiltros()" class="w-full bg-dark-input px-3 py-2 rounded-xl text-xs">
                         <option value="">Todos os Estados</option>
                         <option value="Em Triagem Técnica">Em Triagem Técnica</option>
                         <option value="Encaminhado à Inspecção">Encaminhado à Inspecção</option>
@@ -197,11 +198,11 @@
         <!-- LISTA DE OCORRÊNCIAS -->
         <section>
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                    <i data-lucide="file-text" class="w-5 h-5 text-green-500"></i>
-                    <span>Registo de Processos Ambientais em Tempo Real</span>
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-cyan-400"></i>
+                    <span>Registo de Processos Ambientais na Nuvem</span>
                 </h3>
-                <span id="contador-resultados" class="text-xs text-gray-400 font-mono">A ligar ao Firebase...</span>
+                <span id="contador-resultados" class="text-xs text-teal-300 font-mono">A carregar dados do Firebase...</span>
             </div>
 
             <div id="lista-denuncias" class="grid grid-cols-1 gap-4">
@@ -210,62 +211,60 @@
 
     </main>
 
-    <footer class="bg-dark-card border-t border-gray-800 py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
+    <footer class="bg-dark-card border-t border-teal-800/60 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-teal-400 space-y-2">
             <p>© 2026 ECODENÚNCIA - Plataforma de Protecção Ambiental em Tempo Real.</p>
         </div>
     </footer>
 
     <!-- MODAL FAZER DENÚNCIA -->
-    <div id="modal-denuncia" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-dark-card w-full max-w-3xl rounded-2xl border border-gray-800 shadow-2xl overflow-hidden my-8">
-            <div class="bg-gray-900 px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+    <div id="modal-denuncia" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-dark-card w-full max-w-3xl rounded-2xl border border-teal-700/50 shadow-2xl overflow-hidden my-8">
+            <div class="bg-[#091b22] px-6 py-4 border-b border-teal-800/60 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-green-500/10 text-green-500 rounded-lg">
-                        <i data-lucide="shield-alert" class="w-6 h-6"></i>
-                    </div>
+                    <img src="Modern Earth Energy Logo (1).jpg" alt="Logo" class="h-8 w-auto rounded">
                     <div>
                         <h3 class="text-lg font-bold text-white">Fazer Denúncia Ambiental</h3>
-                        <p class="text-xs text-gray-400">Preencha os dados técnicos da infracção identificada</p>
+                        <p class="text-xs text-teal-300">Preencha os dados técnicos da infracção identificada</p>
                     </div>
                 </div>
-                <button onclick="fecharModalDenuncia()" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                <button onclick="fecharModalDenuncia()" class="text-teal-400 hover:text-white p-1 rounded-lg">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
 
             <form id="form-denuncia" onsubmit="submeterDenuncia(event)" class="p-6 space-y-6">
-                <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="bg-[#122b35] p-4 rounded-xl border border-teal-800/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
-                        <label class="text-sm font-semibold text-white block">Modalidade de Identificação</label>
-                        <p class="text-xs text-gray-400">Escolha se deseja manter o anonimato perante o processo</p>
+                        <label class="text-xs font-bold text-white block">Modalidade de Identificação</label>
+                        <p class="text-[11px] text-teal-300">Escolha se deseja manter o anonimato perante o processo</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="radio" name="modo_anonimo" value="anonimo" checked onchange="atualizarModoAnonimo()" class="text-green-500 focus:ring-green-500">
-                            <span class="ml-2 text-xs font-medium text-gray-200">Denúncia Anónima</span>
+                            <input type="radio" name="modo_anonimo" value="anonimo" checked onchange="atualizarModoAnonimo()" class="text-cyan-400 focus:ring-cyan-400">
+                            <span class="ml-2 text-xs font-semibold text-teal-100">Denúncia Anónima</span>
                         </label>
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="radio" name="modo_anonimo" value="identificado" onchange="atualizarModoAnonimo()" class="text-green-500 focus:ring-green-500">
-                            <span class="ml-2 text-xs font-medium text-gray-200">Identificar Requerente</span>
+                            <input type="radio" name="modo_anonimo" value="identificado" onchange="atualizarModoAnonimo()" class="text-cyan-400 focus:ring-cyan-400">
+                            <span class="ml-2 text-xs font-semibold text-teal-100">Identificar Requerente</span>
                         </label>
                     </div>
                 </div>
 
-                <div id="alerta-identificacao" class="text-xs bg-blue-950/40 border border-blue-800/40 text-blue-300 p-3 rounded-lg flex items-start space-x-2">
-                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                <div id="alerta-identificacao" class="text-xs bg-cyan-950/50 border border-cyan-800/60 text-cyan-200 p-3 rounded-xl flex items-start space-x-2">
+                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5 text-cyan-400"></i>
                     <span><strong>Garantia de Anonimato:</strong> A sua denúncia será registada sob um código encriptado sem associação visível a dados pessoais no mural público.</span>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Título Resumido da Infracção *</label>
-                    <input type="text" id="denuncia-titulo" required placeholder="Ex: Abate ilegal de mangal e deposição de entulho" class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">Título Resumido da Infracção *</label>
+                    <input type="text" id="denuncia-titulo" required placeholder="Ex: Abate ilegal de mangal e deposição de entulho" class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tipologia da Infracção Ambiental *</label>
-                        <select id="denuncia-categoria" onchange="verificarCategoriaCustomizada()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-teal-200 mb-1">Tipologia da Infracção Ambiental *</label>
+                        <select id="denuncia-categoria" onchange="verificarCategoriaCustomizada()" required class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                             <option value="">Selecione a Tipologia...</option>
                             <option value="Destruição de Ecossistemas Costeiros e Mangal">Destruição de Mangal / Zona Costeira</option>
                             <option value="Poluição de Recursos Hídricos">Poluição Hídrica / Descarga de Efluentes</option>
@@ -278,8 +277,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Nível de Impacto Ecológico *</label>
-                        <select id="denuncia-gravidade" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-teal-200 mb-1">Nível de Impacto Ecológico *</label>
+                        <select id="denuncia-gravidade" required class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                             <option value="Leve">Baixo - Infracção Leve / Reversível</option>
                             <option value="Moderado" selected>Moderado - Danos Médios ao Ecossistema</option>
                             <option value="Grave">Crítico - Risco Emergencial / Grave Impacto</option>
@@ -288,31 +287,31 @@
                 </div>
 
                 <div id="container-categoria-custom" class="hidden">
-                    <label class="block text-xs font-semibold text-green-400 mb-1">Especifique a Tipologia Personalizada *</label>
-                    <input type="text" id="denuncia-categoria-custom" placeholder="Escreva aqui a descrição exata da tipologia..." class="w-full bg-dark-input border-green-500/50 px-3 py-2.5 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-cyan-400 mb-1">Especifique a Tipologia Personalizada *</label>
+                    <input type="text" id="denuncia-categoria-custom" placeholder="Escreva aqui a descrição exata da tipologia..." class="w-full bg-dark-input border-cyan-500/50 px-3 py-2.5 rounded-xl text-xs">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">
-                        Evidência Fotográfica do Local <span class="text-green-400 font-normal">(Opcional, mas altamente recomendado)</span>
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">
+                        Evidência Fotográfica do Local <span class="text-cyan-400 font-normal">(Opcional)</span>
                     </label>
-                    <input type="file" id="denuncia-imagem-input" accept="image/*" onchange="previewImagem(event)" class="w-full bg-dark-input px-3 py-2 text-xs rounded-lg text-gray-300 file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer">
+                    <input type="file" id="denuncia-imagem-input" accept="image/*" onchange="previewImagem(event)" class="w-full bg-dark-input px-3 py-2 text-xs rounded-xl text-teal-200 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-cyan-500 file:text-slate-950 hover:file:bg-cyan-400 cursor-pointer">
                     <div id="preview-container" class="mt-3 hidden">
-                        <span class="block text-[11px] text-gray-400 mb-1">Pré-visualização da fotografia anexa:</span>
-                        <img id="preview-img" src="" alt="Pré-visualização" class="h-40 w-auto object-cover rounded-lg border border-gray-700 shadow-md">
+                        <span class="block text-[11px] text-teal-300 mb-1">Pré-visualização da fotografia anexa:</span>
+                        <img id="preview-img" src="" alt="Pré-visualização" class="h-40 w-auto object-cover rounded-xl border border-teal-700 shadow-md">
                     </div>
                 </div>
 
-                <div class="border-t border-gray-800 pt-4">
-                    <h4 class="text-xs font-bold text-green-400 uppercase tracking-wider mb-3 flex items-center space-x-1">
+                <div class="border-t border-teal-800/60 pt-4">
+                    <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-3 flex items-center space-x-1">
                         <i data-lucide="map-pin" class="w-4 h-4"></i>
                         <span>Georreferenciação Administrativa</span>
                     </h4>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Província *</label>
-                            <select id="denuncia-provincia" onchange="carregarDistritos()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            <label class="block text-xs font-semibold text-teal-200 mb-1">Província *</label>
+                            <select id="denuncia-provincia" onchange="carregarDistritos()" required class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                                 <option value="Sofala" selected>Sofala</option>
                                 <option value="Maputo Cidade">Maputo Cidade</option>
                                 <option value="Maputo Província">Maputo Província</option>
@@ -328,34 +327,34 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Distrito / Município *</label>
-                            <select id="denuncia-distrito" onchange="carregarBairros()" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            <label class="block text-xs font-semibold text-teal-200 mb-1">Distrito / Município *</label>
+                            <select id="denuncia-distrito" onchange="carregarBairros()" required class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Bairro *</label>
-                            <select id="denuncia-bairro" required class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                            <label class="block text-xs font-semibold text-teal-200 mb-1">Bairro *</label>
+                            <select id="denuncia-bairro" required class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                             </select>
                         </div>
                     </div>
 
                     <div class="mt-3">
-                        <label class="block text-xs font-semibold text-gray-300 mb-1">Rua, Avenida ou Ponto de Referência Próximo *</label>
-                        <input type="text" id="denuncia-rua" required placeholder="Ex: Av. Krus Gomes, próximo ao Canal de Chiveve" class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-teal-200 mb-1">Rua, Avenida ou Ponto de Referência Próximo *</label>
+                        <input type="text" id="denuncia-rua" required placeholder="Ex: Av. Krus Gomes, próximo ao Canal de Chiveve" class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Descrição Pormenorizada dos Factos *</label>
-                    <textarea id="denuncia-descricao" rows="4" required placeholder="Descreva os detalhes da infração..." class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm"></textarea>
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">Descrição Pormenorizada dos Factos *</label>
+                    <textarea id="denuncia-descricao" rows="4" required placeholder="Descreva os detalhes da infração..." class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs"></textarea>
                 </div>
 
-                <div class="flex items-center justify-end space-x-3 border-t border-gray-800 pt-4">
-                    <button type="button" onclick="fecharModalDenuncia()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
+                <div class="flex items-center justify-end space-x-3 border-t border-teal-800/60 pt-4">
+                    <button type="button" onclick="fecharModalDenuncia()" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-teal-300 hover:text-white hover:bg-[#122b35] transition">
                         Cancelar
                     </button>
-                    <button type="submit" id="btn-submit-denuncia" class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-green-600 hover:bg-green-500 text-white flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
+                    <button type="submit" id="btn-submit-denuncia" class="btn-cyan font-bold px-6 py-2.5 rounded-xl text-xs flex items-center space-x-2 transition shadow-lg shadow-cyan-950/50">
                         <i data-lucide="send" class="w-4 h-4"></i>
                         <span>Submeter Denúncia</span>
                     </button>
@@ -365,38 +364,41 @@
     </div>
 
     <!-- MODAL AUTH -->
-    <div id="modal-auth" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-dark-card w-full max-w-md rounded-2xl border border-gray-800 shadow-2xl overflow-hidden p-6">
+    <div id="modal-auth" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-card w-full max-w-md rounded-2xl border border-teal-700/50 shadow-2xl overflow-hidden p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 id="auth-title" class="text-xl font-bold text-white">Aceder à Plataforma</h3>
-                <button onclick="fecharModalAuth()" class="text-gray-400 hover:text-white">
+                <div class="flex items-center space-x-2">
+                    <img src="Modern Earth Energy Logo (1).jpg" alt="Logo" class="h-7 w-auto rounded">
+                    <h3 id="auth-title" class="text-base font-bold text-white">Aceder à Plataforma</h3>
+                </div>
+                <button onclick="fecharModalAuth()" class="text-teal-400 hover:text-white">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
 
             <form id="form-auth" onsubmit="executarAutenticacao(event)" class="space-y-4">
                 <div id="auth-nome-group" class="hidden">
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nome Completo</label>
-                    <input type="text" id="auth-nome" placeholder="Seu nome completo" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">Nome Completo *</label>
+                    <input type="text" id="auth-nome" placeholder="Seu nome completo" class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Endereço de E-mail</label>
-                    <input type="email" id="auth-email" required placeholder="exemplo@dominio.co.mz" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">Endereço de E-mail *</label>
+                    <input type="email" id="auth-email" required placeholder="exemplo@dominio.co.mz" class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1">Palavra-passe</label>
-                    <input type="password" id="auth-senha" required placeholder="••••••••" class="w-full bg-dark-input px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-semibold text-teal-200 mb-1">Palavra-passe *</label>
+                    <input type="password" id="auth-senha" required placeholder="••••••••" class="w-full bg-dark-input px-3 py-2.5 rounded-xl text-xs">
                 </div>
 
-                <button type="submit" id="auth-btn-submit" class="w-full py-2.5 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg text-sm transition mt-2">
+                <button type="submit" id="auth-btn-submit" class="w-full py-2.5 btn-cyan font-bold rounded-xl text-xs transition mt-2">
                     Entrar na Conta
                 </button>
             </form>
 
             <div class="mt-4 text-center">
-                <button id="auth-toggle-btn" onclick="alternarModoAuth()" class="text-xs text-green-400 hover:underline">
+                <button id="auth-toggle-btn" onclick="alternarModoAuth()" class="text-xs text-cyan-400 hover:underline">
                     Ainda não tem conta? Registe-se aqui.
                 </button>
             </div>
@@ -405,7 +407,6 @@
 
     <!-- JAVASCRIPT & FIREBASE -->
     <script>
-        // CONFIGURAÇÃO REAL DO FIREBASE DO UTILIZADOR
         const firebaseConfig = {
             apiKey: "AIzaSyBok4mjESDfXMFeG7on9-8XHTNLp_ve2W4",
             authDomain: "ecodenuncias-web.firebaseapp.com",
@@ -415,7 +416,6 @@
             appId: "1:852532120207:web:a9e25db60fbcab4444fefa"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -452,7 +452,6 @@
             escutarDenunciasFirebase();
         });
 
-        // ESCUTAR ALTERAÇÕES EM TEMPO REAL NO CLOUD FIRESTORE
         function escutarDenunciasFirebase() {
             db.collection('denuncias').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 denuncias = snapshot.docs.map(doc => doc.data());
@@ -586,7 +585,6 @@
             };
 
             try {
-                // GRAVAR NO CLOUD FIRESTORE ONLINE
                 await db.collection('denuncias').doc(idCodigo).set(novaOcorrencia);
 
                 fecharModalDenuncia();
@@ -636,9 +634,9 @@
 
             if (lista.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-dark-card p-12 text-center rounded-xl border border-gray-800">
-                        <i data-lucide="folder-search" class="w-12 h-12 text-gray-600 mx-auto mb-3"></i>
-                        <p class="text-gray-400 font-medium">Nenhum processo localizado na base de dados.</p>
+                    <div class="bg-dark-card p-12 text-center rounded-2xl border border-teal-800/60">
+                        <i data-lucide="folder-search" class="w-12 h-12 text-teal-600 mx-auto mb-3"></i>
+                        <p class="text-teal-300 font-medium">Nenhum processo localizado na base de dados.</p>
                     </div>
                 `;
                 lucide.createIcons();
@@ -651,50 +649,50 @@
                 if (item.gravidade === 'Moderado') badgeClass = 'badge-moderado';
 
                 return `
-                    <article class="bg-dark-card p-6 rounded-xl border border-gray-800 hover:border-gray-700 transition">
+                    <article class="bg-dark-card p-6 rounded-2xl border border-teal-800/60 hover:border-teal-600 transition">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
                             <div class="flex items-center space-x-3">
-                                <span class="font-mono text-xs font-bold text-green-400 bg-green-950/60 px-2.5 py-1 rounded border border-green-800/40">
+                                <span class="font-mono text-xs font-bold text-cyan-300 bg-cyan-950/80 px-2.5 py-1 rounded-md border border-cyan-700/50">
                                     ${item.id}
                                 </span>
-                                <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${badgeClass}">
+                                <span class="text-xs px-2.5 py-1 rounded-full font-bold ${badgeClass}">
                                     Impacto: ${item.gravidade}
                                 </span>
-                                <span class="text-xs bg-gray-800 text-gray-300 px-2.5 py-1 rounded-full font-medium">
+                                <span class="text-xs bg-[#122b35] text-teal-200 border border-teal-700/40 px-2.5 py-1 rounded-full font-medium">
                                     ${item.estado}
                                 </span>
                             </div>
-                            <span class="text-xs text-gray-500 font-mono">Data: ${item.data}</span>
+                            <span class="text-xs text-teal-400 font-mono">Data: ${item.data}</span>
                         </div>
 
-                        <h4 class="text-lg font-bold text-white mb-1">${item.titulo}</h4>
-                        <p class="text-xs text-green-400 font-semibold mb-3">Tipologia: ${item.categoria}</p>
+                        <h4 class="text-base font-bold text-white mb-1">${item.titulo}</h4>
+                        <p class="text-xs text-cyan-400 font-semibold mb-3">Tipologia: ${item.categoria}</p>
                         
-                        <p class="text-sm text-gray-300 mb-4 leading-relaxed">${item.descricao}</p>
+                        <p class="text-xs text-teal-100 mb-4 leading-relaxed">${item.descricao}</p>
 
                         ${item.imagem ? `
                             <div class="mb-4">
-                                <span class="block text-[11px] font-semibold text-gray-400 mb-1 flex items-center space-x-1">
-                                    <i data-lucide="camera" class="w-3.5 h-3.5 text-green-400"></i>
+                                <span class="block text-[11px] font-semibold text-teal-300 mb-1 flex items-center space-x-1">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5 text-cyan-400"></i>
                                     <span>Evidência Fotográfica Anexa:</span>
                                 </span>
-                                <img src="${item.imagem}" alt="Foto da ocorrência" class="h-48 w-auto max-w-full object-cover rounded-lg border border-gray-800 shadow-md">
+                                <img src="${item.imagem}" alt="Foto da ocorrência" class="h-48 w-auto max-w-full object-cover rounded-xl border border-teal-800 shadow-md">
                             </div>
                         ` : ''}
 
-                        <div class="bg-gray-900/80 p-3 rounded-lg border border-gray-800/80 text-xs text-gray-300 grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
-                            <div><strong class="text-gray-400">Província / Distrito:</strong> ${item.provincia} - ${item.distrito}</div>
-                            <div><strong class="text-gray-400">Bairro:</strong> ${item.bairro}</div>
-                            <div class="sm:col-span-2"><strong class="text-gray-400">Endereço / Referência:</strong> ${item.rua}</div>
+                        <div class="bg-[#102730] p-3 rounded-xl border border-teal-800/60 text-xs text-teal-200 grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                            <div><strong class="text-teal-400">Província / Distrito:</strong> ${item.provincia} - ${item.distrito}</div>
+                            <div><strong class="text-teal-400">Bairro:</strong> ${item.bairro}</div>
+                            <div class="sm:col-span-2"><strong class="text-teal-400">Endereço / Referência:</strong> ${item.rua}</div>
                         </div>
 
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-800 text-xs text-gray-400">
+                        <div class="flex items-center justify-between pt-3 border-t border-teal-800/60 text-xs text-teal-300">
                             <div class="flex items-center space-x-2">
-                                <i data-lucide="user-check" class="w-4 h-4 text-green-500"></i>
+                                <i data-lucide="user-check" class="w-4 h-4 text-cyan-400"></i>
                                 <span>Requerente: <strong>${item.requerente}</strong></span>
                             </div>
 
-                            <button onclick="apoiarProcesso('${item.id}')" class="flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 text-green-400 px-3 py-1.5 rounded-lg border border-gray-700 transition">
+                            <button onclick="apoiarProcesso('${item.id}')" class="flex items-center space-x-1.5 bg-[#122b35] hover:bg-[#1a3c48] text-cyan-300 px-3 py-1.5 rounded-xl border border-teal-700/50 transition">
                                 <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
                                 <span>Apoiar Requerimento (${item.votos || 1})</span>
                             </button>
@@ -732,7 +730,7 @@
             const toggleBtn = document.getElementById('auth-toggle-btn');
 
             if (modo === 'register') {
-                title.textContent = 'Criar Conta de Cidadão';
+                title.textContent = 'Criar Conta no Firebase';
                 groupNome.classList.remove('hidden');
                 btnSubmit.textContent = 'Efetuar Registo';
                 toggleBtn.textContent = 'Já possui conta? Inicie sessão.';
@@ -752,17 +750,70 @@
             abrirModalAuth(modoAuth === 'login' ? 'register' : 'login');
         }
 
-        function executarAutenticacao(e) {
+        async function executarAutenticacao(e) {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const nome = document.getElementById('auth-nome').value || email.split('@')[0];
+            const email = document.getElementById('auth-email').value.trim().toLowerCase();
+            const senha = document.getElementById('auth-senha').value;
+            const btnSubmit = document.getElementById('auth-btn-submit');
 
-            utilizadorAtual = { nome: nome, email: email };
-            localStorage.setItem('ecodenuncia_user', JSON.stringify(utilizadorAtual));
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "A processar no Firebase...";
 
-            atualizarEstadoUtilizador();
-            fecharModalAuth();
-            alert(`Sessão iniciada com sucesso. Bem-vindo(a), ${nome}!`);
+            try {
+                if (modoAuth === 'register') {
+                    const nome = document.getElementById('auth-nome').value.trim();
+                    if (!nome) {
+                        alert("Por favor, preencha o seu nome completo.");
+                        return;
+                    }
+
+                    // Verificar se utilizador já existe no Firestore
+                    const userDoc = await db.collection('utilizadores').doc(email).get();
+                    if (userDoc.exists) {
+                        alert("Este e-mail já se encontra registado. Inicie sessão.");
+                        return;
+                    }
+
+                    const novoUtilizador = {
+                        nome: nome,
+                        email: email,
+                        senha: senha,
+                        dataRegisto: new Date().toISOString()
+                    };
+
+                    await db.collection('utilizadores').doc(email).set(novoUtilizador);
+                    utilizadorAtual = { nome: nome, email: email };
+                    localStorage.setItem('ecodenuncia_user', JSON.stringify(utilizadorAtual));
+                    alert(`Conta criada com sucesso no Firebase! Bem-vindo(a), ${nome}!`);
+
+                } else {
+                    // Login: Verificar email e senha no Firestore
+                    const userDoc = await db.collection('utilizadores').doc(email).get();
+                    if (!userDoc.exists) {
+                        alert("Utilizador não encontrado no Firebase. Por favor, crie uma conta.");
+                        return;
+                    }
+
+                    const userData = userDoc.data();
+                    if (userData.senha !== senha) {
+                        alert("Palavra-passe incorreta. Tente novamente.");
+                        return;
+                    }
+
+                    utilizadorAtual = { nome: userData.nome, email: userData.email };
+                    localStorage.setItem('ecodenuncia_user', JSON.stringify(utilizadorAtual));
+                    alert(`Sessão iniciada com sucesso. Bem-vindo(a) de volta, ${userData.nome}!`);
+                }
+
+                atualizarEstadoUtilizador();
+                fecharModalAuth();
+            } catch (err) {
+                console.error("Erro na autenticação:", err);
+                alert("Ocorreu um erro na autenticação com o Firebase.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = modoAuth === 'register' ? 'Efetuar Registo' : 'Entrar na Conta';
+            }
         }
 
         function terminarSessao() {
