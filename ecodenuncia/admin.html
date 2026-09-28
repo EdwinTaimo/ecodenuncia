@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECODENÚNCIA - Painel de Administração e Auditoria</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- jsPDF & AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080b10;
+            color: #e2e8f0;
+        }
+        .bg-dark-card {
+            background-color: #0f141e;
+            border: 1px solid #1a2333;
+        }
+        .bg-dark-input {
+            background-color: #161d2b;
+            border: 1px solid #253247;
+            color: #f8fafc;
+        }
+        .bg-dark-input:focus {
+            border-color: #22c55e;
+            outline: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- LOGIN OVERLAY DO ADMINISTRADOR -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-dark-card w-full max-w-md rounded-2xl border border-gray-800 p-8 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-green-500/10 text-green-500 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-green-500/20">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white tracking-wide">PAINEL ADMINISTRATIVO</h2>
+                <p class="text-xs text-gray-400 mt-1">Acesso Restrito a Inspecção e Gestão Ambiental</p>
+            </div>
+
+            <form onsubmit="autenticarAdmin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Nome de Utilizador (Username)</label>
+                    <input type="text" id="admin-user-input" required placeholder="admin" class="w-full bg-dark-input px-3.5 py-2.5 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Palavra-passe (Password)</label>
+                    <input type="password" id="admin-pass-input" required placeholder="••••••••" class="w-full bg-dark-input px-3.5 py-2.5 rounded-lg text-sm">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg text-sm transition shadow-lg shadow-green-950/50">
+                    Entrar no Sistema
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <a href="index.html" class="text-xs text-gray-500 hover:text-gray-300">← Voltar ao Portal Público</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- PAINEL PRINCIPAL DO ADMINISTRADOR -->
+    <div id="admin-dashboard" class="hidden min-h-screen flex flex-col">
+        
+        <!-- HEADER ADMIN -->
+        <header class="bg-dark-card border-b border-gray-800 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-green-500/20 text-green-400 text-xs font-mono font-bold px-2.5 py-1 rounded border border-green-500/30">ADMIN</span>
+                    <h1 class="text-xl font-bold text-white">ECODENÚNCIA - Gestão e Auditoria</h1>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <span id="admin-welcome-name" class="text-xs font-semibold text-gray-300 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-800">
+                        Sessão: admin
+                    </span>
+                    <button onclick="abrirModalGestaoUtilizadores()" class="text-xs bg-gray-800 hover:bg-gray-700 text-green-400 border border-green-500/30 px-3 py-2 rounded-lg transition flex items-center space-x-1">
+                        <i data-lucide="user-cog" class="w-4 h-4"></i>
+                        <span>Alterar Senha / Utilizadores</span>
+                    </button>
+                    <button onclick="terminarSessaoAdmin()" class="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg transition" title="Sair do Painel">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVEGAÇÃO ENTRE MÓDULOS -->
+        <div class="bg-gray-900/60 border-b border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6">
+                <button onclick="mudarAba('processos')" id="aba-btn-processos" class="py-3 text-sm font-semibold border-b-2 border-green-500 text-green-400 flex items-center space-x-2">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>Gestão de Denúncias</span>
+                </button>
+                <button onclick="mudarAba('estatisticas')" id="aba-btn-estatisticas" class="py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center space-x-2">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Estatísticas e Gráficos</span>
+                </button>
+                <button onclick="mudarAba('historico')" id="aba-btn-historico" class="py-3 text-sm font-semibold border-b-2 border-transparent text-gray-400 hover:text-white flex items-center space-x-2">
+                    <i data-lucide="history" class="w-4 h-4"></i>
+                    <span>Histórico de Alterações (Audit Log)</span>
+                </button>
+            </div>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+            
+            <!-- ABA 1: GESTÃO DE PROCESSOS -->
+            <section id="conteudo-processos" class="space-y-6">
+                
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-dark-card p-4 rounded-xl">
+                    <div class="flex items-center space-x-3 w-full md:w-auto">
+                        <input type="text" id="pesquisa-admin" oninput="renderizarTabelaAdmin()" placeholder="Filtrar por código, título ou local..." class="bg-dark-input px-3.5 py-2 rounded-lg text-xs w-full md:w-64">
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-gray-400 font-semibold mr-2">Exportar Denúncias:</span>
+                        <button onclick="exportarProcessos('csv')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition flex items-center space-x-1">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-400"></i>
+                            <span>CSV</span>
+                        </button>
+                        <button onclick="exportarProcessos('excel')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition flex items-center space-x-1">
+                            <i data-lucide="sheet" class="w-3.5 h-3.5 text-green-400"></i>
+                            <span>Excel</span>
+                        </button>
+                        <button onclick="exportarProcessos('pdf')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition flex items-center space-x-1">
+                            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-red-400"></i>
+                            <span>PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TABELA DE DENÚNCIAS -->
+                <div class="bg-dark-card rounded-xl overflow-hidden border border-gray-800 shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-900 text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-800">
+                                <tr>
+                                    <th class="p-4">Código / Data</th>
+                                    <th class="p-4">Evidência</th>
+                                    <th class="p-4">Título e Tipologia</th>
+                                    <th class="p-4">Localização</th>
+                                    <th class="p-4">Identidade do Requerente</th>
+                                    <th class="p-4">Impacto</th>
+                                    <th class="p-4">Estado de Triagem</th>
+                                    <th class="p-4 text-center">Acções Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-processos-body" class="divide-y divide-gray-800 text-gray-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ABA 2: ESTATÍSTICAS E GRÁFICOS -->
+            <section id="conteudo-estatisticas" class="hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-dark-card p-5 rounded-xl border border-gray-800">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Distribuição por Tipologia</h4>
+                        <div class="h-64"><canvas id="chart-tipologia"></canvas></div>
+                    </div>
+
+                    <div class="bg-dark-card p-5 rounded-xl border border-gray-800">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Ocorrências por Província</h4>
+                        <div class="h-64"><canvas id="chart-provincia"></canvas></div>
+                    </div>
+
+                    <div class="bg-dark-card p-5 rounded-xl border border-gray-800">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Nível de Impacto Ecológico</h4>
+                        <div class="h-64"><canvas id="chart-impacto"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ABA 3: HISTÓRICO DE ALTERAÇÕES -->
+            <section id="conteudo-historico" class="hidden space-y-6">
+                <div class="flex items-center justify-between bg-dark-card p-4 rounded-xl">
+                    <div>
+                        <h3 class="text-sm font-bold text-white">Registo Inalterável de Operações e Modificações</h3>
+                        <p class="text-xs text-gray-400">Histórico de auditoria de alterações de estado, eliminações e gestão de utilizadores</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-gray-400 font-semibold mr-2">Exportar Histórico:</span>
+                        <button onclick="exportarHistorico('csv')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">CSV</button>
+                        <button onclick="exportarHistorico('excel')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">Excel</button>
+                        <button onclick="exportarHistorico('pdf')" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 transition">PDF</button>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card rounded-xl overflow-hidden border border-gray-800">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-900 text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-800">
+                                <tr>
+                                    <th class="p-4">Carimbo de Data/Hora</th>
+                                    <th class="p-4">Utilizador Admin</th>
+                                    <th class="p-4">Tipo de Operação</th>
+                                    <th class="p-4">Descrição Detalhada</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-historico-body" class="divide-y divide-gray-800 text-gray-300 font-mono">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+
+    <!-- MODAL FOTO VISUALIZAÇÃO AMPLIADA -->
+    <div id="modal-foto-ampliada" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative max-w-3xl max-h-screen p-2">
+            <button onclick="fecharModalFoto()" class="absolute top-4 right-4 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <img id="img-ampliada" src="" alt="Fotografia Ampliada" class="max-h-[85vh] w-auto object-contain rounded-lg border border-gray-700 shadow-2xl">
+        </div>
+    </div>
+
+
+    <!-- MODAL GESTÃO DE UTILIZADORES -->
+    <div id="modal-utilizadores" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-card w-full max-w-lg rounded-2xl border border-gray-800 p-6 space-y-6">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-base font-bold text-white">Segurança e Gestão de Utilizadores Admin</h3>
+                <button onclick="fecharModalGestaoUtilizadores()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="alterarSenhaAdmin(event)" class="space-y-3 bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                <h4 class="text-xs font-bold text-green-400 uppercase">Alterar Palavra-passe Atual</h4>
+                <div>
+                    <label class="block text-xs text-gray-300 mb-1">Nova Palavra-passe</label>
+                    <input type="password" id="nova-senha-input" required placeholder="Nova senha" class="w-full bg-dark-input px-3 py-2 rounded-lg text-xs">
+                </div>
+                <button type="submit" class="w-full py-2 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-lg transition">
+                    Guardar Nova Palavra-passe
+                </button>
+            </form>
+
+            <form onsubmit="adicionarNovoAdmin(event)" class="space-y-3 bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                <h4 class="text-xs font-bold text-blue-400 uppercase">Adicionar Novo Administrador</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1">Novo Username</label>
+                        <input type="text" id="novo-admin-user" required placeholder="ex: inspetor1" class="w-full bg-dark-input px-3 py-2 rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1">Palavra-passe Inicial</label>
+                        <input type="password" id="novo-admin-pass" required placeholder="••••••••" class="w-full bg-dark-input px-3 py-2 rounded-lg text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">
+                    Adicionar Novo Administrador
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT PAINEL ADMIN -->
+    <script>
+        let adminLogado = sessionStorage.getItem('ecodenuncia_admin_sessao') || null;
+
+        let credenciaisAdmins = JSON.parse(localStorage.getItem('ecodenuncia_admins')) || [
+            { username: 'admin', pass: 'mozambique26', perfil: 'Administrador Principal' }
+        ];
+
+        let denuncias = JSON.parse(localStorage.getItem('ecodenuncia_dados')) || [];
+
+        let historicoLogs = JSON.parse(localStorage.getItem('ecodenuncia_audit_logs')) || [
+            {
+                dataHora: '2026-09-28 08:30:00',
+                utilizador: 'SISTEMA',
+                operacao: 'Inicialização',
+                descricao: 'Sistema de Auditoria e Controlo de Denúncias Inicializado.'
+            }
+        ];
+
+        let chartTipologiaInstance = null;
+        let chartProvinciaInstance = null;
+        let chartImpactoInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            if (adminLogado) {
+                exibirPainel();
+            }
+        });
+
+        function autenticarAdmin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user-input').value.trim();
+            const p = document.getElementById('admin-pass-input').value.trim();
+
+            const encontrado = credenciaisAdmins.find(adm => adm.username === u && adm.pass === p);
+
+            if (encontrado) {
+                adminLogado = u;
+                sessionStorage.setItem('ecodenuncia_admin_sessao', u);
+                registrarLog('Autenticação', `Início de sessão efetuado pelo administrador "${u}".`);
+                exibirPainel();
+            } else {
+                alert('Credenciais inválidas! Verifique o Username e Senha.');
+            }
+        }
+
+        function terminarSessaoAdmin() {
+            registrarLog('Autenticação', `Sessão encerrada pelo utilizador "${adminLogado}".`);
+            sessionStorage.removeItem('ecodenuncia_admin_sessao');
+            window.location.reload();
+        }
+
+        function exibirPainel() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            document.getElementById('admin-welcome-name').textContent = `Sessão: ${adminLogado}`;
+
+            renderizarTabelaAdmin();
+            renderizarHistorico();
+            lucide.createIcons();
+        }
+
+        function abrirModalGestaoUtilizadores() {
+            document.getElementById('modal-utilizadores').classList.remove('hidden');
+        }
+
+        function fecharModalGestaoUtilizadores() {
+            document.getElementById('modal-utilizadores').classList.add('hidden');
+        }
+
+        function alterarSenhaAdmin(e) {
+            e.preventDefault();
+            const novaSenha = document.getElementById('nova-senha-input').value;
+            const idx = credenciaisAdmins.findIndex(a => a.username === adminLogado);
+            if (idx !== -1) {
+                credenciaisAdmins[idx].pass = novaSenha;
+                localStorage.setItem('ecodenuncia_admins', JSON.stringify(credenciaisAdmins));
+                registrarLog('Segurança', `Palavra-passe alterada para o utilizador "${adminLogado}".`);
+                alert('Palavra-passe alterada com sucesso!');
+                fecharModalGestaoUtilizadores();
+                document.getElementById('nova-senha-input').value = '';
+            }
+        }
+
+        function adicionarNovoAdmin(e) {
+            e.preventDefault();
+            const novoU = document.getElementById('novo-admin-user').value.trim();
+            const novoP = document.getElementById('novo-admin-pass').value.trim();
+
+            if (credenciaisAdmins.some(a => a.username === novoU)) {
+                alert('Aviso: Este nome de utilizador já existe!');
+                return;
+            }
+
+            credenciaisAdmins.push({ username: novoU, pass: novoP, perfil: 'Administrador' });
+            localStorage.setItem('ecodenuncia_admins', JSON.stringify(credenciaisAdmins));
+
+            registrarLog('Gestão Utilizadores', `Novo administrador criado: "${novoU}".`);
+            alert(`Utilizador "${novoU}" adicionado com sucesso!`);
+            fecharModalGestaoUtilizadores();
+            document.getElementById('novo-admin-user').value = '';
+            document.getElementById('novo-admin-pass').value = '';
+        }
+
+        function mudarAba(aba) {
+            ['processos', 'estatisticas', 'historico'].forEach(a => {
+                document.getElementById(`conteudo-${a}`).classList.add('hidden');
+                const btn = document.getElementById(`aba-btn-${a}`);
+                btn.classList.remove('border-green-500', 'text-green-400');
+                btn.classList.add('border-transparent', 'text-gray-400');
+            });
+
+            document.getElementById(`conteudo-${aba}`).classList.remove('hidden');
+            const btnAtivo = document.getElementById(`aba-btn-${aba}`);
+            btnAtivo.classList.add('border-green-500', 'text-green-400');
+            btnAtivo.classList.remove('border-transparent', 'text-gray-400');
+
+            if (aba === 'estatisticas') {
+                renderizarGraficos();
+            }
+        }
+
+        function renderizarTabelaAdmin() {
+            const termo = document.getElementById('pesquisa-admin').value.toLowerCase();
+            const tbody = document.getElementById('tabela-processos-body');
+
+            const filtrados = denuncias.filter(d => 
+                d.id.toLowerCase().includes(termo) ||
+                d.titulo.toLowerCase().includes(termo) ||
+                d.provincia.toLowerCase().includes(termo) ||
+                d.bairro.toLowerCase().includes(termo)
+            );
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-gray-500">Nenhuma denúncia registada.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtrados.map(item => `
+                <tr class="hover:bg-gray-900/50 transition">
+                    <td class="p-4">
+                        <span class="font-bold text-green-400">${item.id}</span>
+                        <div class="text-gray-500 text-[10px]">${item.data}</div>
+                    </td>
+                    <td class="p-4">
+                        ${item.imagem ? `
+                            <img src="${item.imagem}" onclick="ampliarFoto('${item.imagem}')" class="w-12 h-12 object-cover rounded border border-gray-700 cursor-pointer hover:opacity-80 transition" title="Clique para ampliar">
+                        ` : `
+                            <span class="text-gray-600 text-[10px] italic">Sem foto</span>
+                        `}
+                    </td>
+                    <td class="p-4 max-w-xs">
+                        <strong class="text-white block truncate" title="${item.titulo}">${item.titulo}</strong>
+                        <span class="text-gray-400 text-[11px]">${item.categoria}</span>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-gray-200 font-semibold">${item.provincia} - ${item.distrito}</div>
+                        <div class="text-gray-500 text-[11px]">${item.bairro}, ${item.rua}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-gray-200">${item.nomeIdentificado || item.requerente}</div>
+                        <span class="text-[10px] text-gray-500 font-mono">Modo: ${item.requerente}</span>
+                    </td>
+                    <td class="p-4">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.gravidade === 'Grave' ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-yellow-950 text-yellow-400 border border-yellow-800'}">
+                            ${item.gravidade}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <select onchange="alterarEstadoProcesso('${item.id}', this.value)" class="bg-gray-900 border border-gray-700 text-gray-200 rounded px-2 py-1 text-xs">
+                            <option value="Em Triagem Técnica" ${item.estado === 'Em Triagem Técnica' ? 'selected' : ''}>Em Triagem Técnica</option>
+                            <option value="Encaminhado à Inspecção" ${item.estado === 'Encaminhado à Inspecção' ? 'selected' : ''}>Encaminhado à Inspecção</option>
+                            <option value="Notificado / Sancionado" ${item.estado === 'Notificado / Sancionado' ? 'selected' : ''}>Notificado / Sancionado</option>
+                            <option value="Resolvido / Mitigado" ${item.estado === 'Resolvido / Mitigado' ? 'selected' : ''}>Resolvido / Mitigado</option>
+                        </select>
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="apagarDenuncia('${item.id}')" class="p-1.5 bg-red-950/60 hover:bg-red-900 text-red-400 rounded-lg border border-red-800/50 transition" title="Apagar Denúncia">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function ampliarFoto(src) {
+            document.getElementById('img-ampliada').src = src;
+            document.getElementById('modal-foto-ampliada').classList.remove('hidden');
+        }
+
+        function fecharModalFoto() {
+            document.getElementById('modal-foto-ampliada').classList.add('hidden');
+        }
+
+        function alterarEstadoProcesso(id, novoEstado) {
+            const item = denuncias.find(d => d.id === id);
+            if (item) {
+                const estadoAntigo = item.estado;
+                item.estado = novoEstado;
+                localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
+
+                registrarLog('Alteração de Estado', `Processo "${id}": estado alterado de "${estadoAntigo}" para "${novoEstado}".`);
+                alert(`Estado do processo ${id} atualizado.`);
+            }
+        }
+
+        function apagarDenuncia(id) {
+            if (confirm(`Atenção: Tem a certeza que deseja apagar definitivamente o processo ${id}?`)) {
+                const item = denuncias.find(d => d.id === id);
+                denuncias = denuncias.filter(d => d.id !== id);
+                localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
+
+                registrarLog('Eliminação de Processo', `Denúncia "${id}" (${item ? item.titulo : ''}) foi eliminada definitivamente.`);
+                renderizarTabelaAdmin();
+                alert('Denúncia apagada com sucesso.');
+            }
+        }
+
+        function registrarLog(operacao, descricao) {
+            const agora = new Date();
+            const dataFormatada = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}-${String(agora.getDate()).padStart(2,'0')} ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}:${String(agora.getSeconds()).padStart(2,'0')}`;
+
+            const novoLog = {
+                dataHora: dataFormatada,
+                utilizador: adminLogado || 'SISTEMA',
+                operacao: operacao,
+                descricao: descricao
+            };
+
+            historicoLogs.unshift(novoLog);
+            localStorage.setItem('ecodenuncia_audit_logs', JSON.stringify(historicoLogs));
+            renderizarHistorico();
+        }
+
+        function renderizarHistorico() {
+            const tbody = document.getElementById('tabela-historico-body');
+            tbody.innerHTML = historicoLogs.map(log => `
+                <tr class="hover:bg-gray-900/40 border-b border-gray-800/50">
+                    <td class="p-3 text-gray-500">${log.dataHora}</td>
+                    <td class="p-3 text-green-400 font-bold">${log.utilizador}</td>
+                    <td class="p-3 text-blue-400">${log.operacao}</td>
+                    <td class="p-3 text-gray-300">${log.descricao}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarGraficos() {
+            if (chartTipologiaInstance) chartTipologiaInstance.destroy();
+            if (chartProvinciaInstance) chartProvinciaInstance.destroy();
+            if (chartImpactoInstance) chartImpactoInstance.destroy();
+
+            const tipologias = {};
+            denuncias.forEach(d => tipologias[d.categoria] = (tipologias[d.categoria] || 0) + 1);
+
+            chartTipologiaInstance = new Chart(document.getElementById('chart-tipologia'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(tipologias),
+                    datasets: [{ data: Object.values(tipologias), backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 } } } } }
+            });
+
+            const provincias = {};
+            denuncias.forEach(d => provincias[d.provincia] = (provincias[d.provincia] || 0) + 1);
+
+            chartProvinciaInstance = new Chart(document.getElementById('chart-provincia'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(provincias),
+                    datasets: [{ label: 'Processos', data: Object.values(provincias), backgroundColor: '#22c55e' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#9ca3af' } }, y: { ticks: { color: '#9ca3af' } } } }
+            });
+
+            const impactos = {};
+            denuncias.forEach(d => impactos[d.gravidade] = (impactos[d.gravidade] || 0) + 1);
+
+            chartImpactoInstance = new Chart(document.getElementById('chart-impacto'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(impactos),
+                    datasets: [{ data: Object.values(impactos), backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 } } } } }
+            });
+        }
+
+        function exportarProcessos(formato) {
+            const dados = denuncias.map(d => ({
+                ID: d.id,
+                Data: d.data,
+                Titulo: d.titulo,
+                Tipologia: d.categoria,
+                Provincia: d.provincia,
+                Distrito: d.distrito,
+                Bairro: d.bairro,
+                Rua: d.rua,
+                Requerente_Modo: d.requerente,
+                Nome_Identificado: d.nomeIdentificado || d.requerente,
+                Impacto: d.gravidade,
+                Estado: d.estado
+            }));
+
+            if (formato === 'csv') {
+                const csvRows = [Object.keys(dados[0]).join(',')];
+                dados.forEach(row => csvRows.push(Object.values(row).map(v => `"${v}"`).join(',')));
+                downloadBlob(csvRows.join('\n'), 'ecodenuncia_relatorio.csv', 'text/csv');
+            } else if (formato === 'excel') {
+                const ws = XLSX.utils.json_to_sheet(dados);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Denuncias');
+                XLSX.writeFile(wb, 'ecodenuncia_relatorio.xlsx');
+            } else if (formato === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape');
+                doc.text("ECODENÚNCIA - Relatório Geral de Processos Ambientais", 14, 15);
+                
+                const tableColumn = ["ID", "Data", "Título", "Província", "Bairro", "Requerente Real", "Estado"];
+                const tableRows = dados.map(d => [d.ID, d.Data, d.Titulo, d.Provincia, d.Bairro, d.Nome_Identificado, d.Estado]);
+
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 20 });
+                doc.save('ecodenuncia_relatorio.pdf');
+            }
+            registrarLog('Exportação', `Relatório de Denúncias exportado no formato ${formato.toUpperCase()}.`);
+        }
+
+        function exportarHistorico(formato) {
+            if (formato === 'csv') {
+                const csvRows = ["DataHora,Utilizador,Operacao,Descricao"];
+                historicoLogs.forEach(l => csvRows.push(`"${l.dataHora}","${l.utilizador}","${l.operacao}","${l.descricao}"`));
+                downloadBlob(csvRows.join('\n'), 'ecodenuncia_historico_auditoria.csv', 'text/csv');
+            } else if (formato === 'excel') {
+                const ws = XLSX.utils.json_to_sheet(historicoLogs);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'HistoricoAuditoria');
+                XLSX.writeFile(wb, 'ecodenuncia_historico_auditoria.xlsx');
+            } else if (formato === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text("ECODENÚNCIA - Registo de Auditoria de Alterações", 14, 15);
+                
+                const tableColumn = ["Data/Hora", "Utilizador", "Operação", "Descrição"];
+                const tableRows = historicoLogs.map(l => [l.dataHora, l.utilizador, l.operacao, l.descricao]);
+
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 20 });
+                doc.save('ecodenuncia_historico_auditoria.pdf');
+            }
+        }
+
+        function downloadBlob(content, filename, contentType) {
+            const blob = new Blob(["\ufeff" + content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+    </script>
+</body>
+</html>
