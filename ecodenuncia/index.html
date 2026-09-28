@@ -16,10 +16,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000;
+            background-color: #0b0e14;
             color: #e2e8f0;
         }
         .bg-dark-card {
@@ -58,7 +62,6 @@
     <header class="bg-dark-card sticky top-0 z-40 shadow-xl border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             
-            <!-- LOGÓTIPO ECODENÚNCIA -->
             <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
                 <div class="relative w-12 h-12 flex items-center justify-center">
                     <svg viewBox="0 0 100 100" class="w-full h-full">
@@ -73,7 +76,6 @@
                 </div>
             </div>
 
-            <!-- ACÇÕES E SESSÃO -->
             <div class="flex items-center space-x-4">
                 <button onclick="abrirModalDenuncia()" class="bg-green-600 hover:bg-green-500 text-white font-semibold px-5 py-2.5 rounded-lg flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
                     <i data-lucide="shield-alert" class="w-5 h-5"></i>
@@ -85,7 +87,6 @@
                     <span>Área Administrativa</span>
                 </a>
 
-                <!-- ESTADO DO UTILIZADOR -->
                 <div id="user-status-container" class="border-l border-gray-700 pl-4 flex items-center space-x-3">
                     <div id="user-guest-view" class="flex items-center space-x-2">
                         <button onclick="abrirModalAuth('login')" class="text-sm font-medium text-gray-300 hover:text-white transition px-3 py-1.5 rounded-md hover:bg-gray-800">
@@ -113,11 +114,10 @@
     <!-- PAINEL PRINCIPAL -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
         
-        <!-- BANNER INFORMACIONAL -->
         <div class="bg-gradient-to-r from-green-950/40 via-dark-card to-dark-card p-6 rounded-xl border border-green-800/30 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-900/50 text-green-400 border border-green-700/50 mb-2">
-                    Plataforma Oficial de Vigilância Comunitária
+                    Base de Dados Online em Tempo Real (Firebase)
                 </span>
                 <h2 class="text-xl font-bold text-white">Portal Nacional de Reporte de Infracções Ambientais</h2>
                 <p class="text-sm text-gray-400 mt-1 max-w-3xl">
@@ -199,30 +199,26 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-white flex items-center space-x-2">
                     <i data-lucide="file-text" class="w-5 h-5 text-green-500"></i>
-                    <span>Registo de Processos Ambientais</span>
+                    <span>Registo de Processos Ambientais em Tempo Real</span>
                 </h3>
-                <span id="contador-resultados" class="text-xs text-gray-400 font-mono">Mostrando 0 processos</span>
+                <span id="contador-resultados" class="text-xs text-gray-400 font-mono">A ligar ao Firebase...</span>
             </div>
 
             <div id="lista-denuncias" class="grid grid-cols-1 gap-4">
-                <!-- Preenchido via JavaScript -->
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="bg-dark-card border-t border-gray-800 py-6 mt-12">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
-            <p>© 2026 ECODENÚNCIA - Plataforma de Protecção Ambiental.</p>
-            <p>Desenvolvido para apoio à fiscalização ambiental comunitária em Moçambique.</p>
+            <p>© 2026 ECODENÚNCIA - Plataforma de Protecção Ambiental em Tempo Real.</p>
         </div>
     </footer>
 
-    <!-- MODAL: FAZER DENÚNCIA -->
+    <!-- MODAL FAZER DENÚNCIA -->
     <div id="modal-denuncia" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-dark-card w-full max-w-3xl rounded-2xl border border-gray-800 shadow-2xl overflow-hidden my-8">
-            
             <div class="bg-gray-900 px-6 py-4 border-b border-gray-800 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-green-500/10 text-green-500 rounded-lg">
@@ -239,7 +235,6 @@
             </div>
 
             <form id="form-denuncia" onsubmit="submeterDenuncia(event)" class="p-6 space-y-6">
-                
                 <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <label class="text-sm font-semibold text-white block">Modalidade de Identificação</label>
@@ -267,7 +262,6 @@
                     <input type="text" id="denuncia-titulo" required placeholder="Ex: Abate ilegal de mangal e deposição de entulho" class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm">
                 </div>
 
-                <!-- TIPOLOGIA COM OPÇÃO PERSONALIZADA -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-300 mb-1">Tipologia da Infracção Ambiental *</label>
@@ -293,13 +287,11 @@
                     </div>
                 </div>
 
-                <!-- CAMPO PERSONALIZADO PARA OUTRA TIPOLOGIA -->
                 <div id="container-categoria-custom" class="hidden">
                     <label class="block text-xs font-semibold text-green-400 mb-1">Especifique a Tipologia Personalizada *</label>
                     <input type="text" id="denuncia-categoria-custom" placeholder="Escreva aqui a descrição exata da tipologia..." class="w-full bg-dark-input border-green-500/50 px-3 py-2.5 rounded-lg text-sm">
                 </div>
 
-                <!-- UPLOAD DE IMAGEM DA LOCALIZAÇÃO (OPCIONAL / RECOMENDADO) -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-300 mb-1">
                         Evidência Fotográfica do Local <span class="text-green-400 font-normal">(Opcional, mas altamente recomendado)</span>
@@ -311,7 +303,6 @@
                     </div>
                 </div>
 
-                <!-- LOCALIZAÇÃO ADMINISTRATIVA -->
                 <div class="border-t border-gray-800 pt-4">
                     <h4 class="text-xs font-bold text-green-400 uppercase tracking-wider mb-3 flex items-center space-x-1">
                         <i data-lucide="map-pin" class="w-4 h-4"></i>
@@ -357,24 +348,23 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-300 mb-1">Descrição Pormenorizada dos Factos *</label>
-                    <textarea id="denuncia-descricao" rows="4" required placeholder="Descreva os detalhes da infração, intervenientes visíveis, frequência e extensão do dano ambiental..." class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm"></textarea>
+                    <textarea id="denuncia-descricao" rows="4" required placeholder="Descreva os detalhes da infração..." class="w-full bg-dark-input px-3 py-2.5 rounded-lg text-sm"></textarea>
                 </div>
 
                 <div class="flex items-center justify-end space-x-3 border-t border-gray-800 pt-4">
                     <button type="button" onclick="fecharModalDenuncia()" class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition">
                         Cancelar
                     </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-green-600 hover:bg-green-500 text-white flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
+                    <button type="submit" id="btn-submit-denuncia" class="px-6 py-2.5 rounded-lg text-sm font-semibold bg-green-600 hover:bg-green-500 text-white flex items-center space-x-2 transition shadow-lg shadow-green-950/50">
                         <i data-lucide="send" class="w-4 h-4"></i>
                         <span>Submeter Denúncia</span>
                     </button>
                 </div>
-
             </form>
         </div>
     </div>
 
-    <!-- MODAL DE AUTENTICAÇÃO -->
+    <!-- MODAL AUTH -->
     <div id="modal-auth" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-dark-card w-full max-w-md rounded-2xl border border-gray-800 shadow-2xl overflow-hidden p-6">
             <div class="flex justify-between items-center mb-6">
@@ -413,8 +403,22 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
+    <!-- JAVASCRIPT & FIREBASE -->
     <script>
+        // CONFIGURAÇÃO REAL DO FIREBASE DO UTILIZADOR
+        const firebaseConfig = {
+            apiKey: "AIzaSyBok4mjESDfXMFeG7on9-8XHTNLp_ve2W4",
+            authDomain: "ecodenuncias-web.firebaseapp.com",
+            projectId: "ecodenuncias-web",
+            storageBucket: "ecodenuncias-web.firebasestorage.app",
+            messagingSenderId: "852532120207",
+            appId: "1:852532120207:web:a9e25db60fbcab4444fefa"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const MOZAMBIQUE_LOCATIONS = {
             "Sofala": {
                 "Cidade da Beira": ["Ponta Gêa", "Macuti", "Estoril", "Chaimite", "Matacuane", "Macurungo", "Manga", "Munhava", "Inhamízua", "Vaz", "Nhangau", "Alto da Manga", "Chota", "Palmeiras I", "Palmeiras II"],
@@ -436,28 +440,7 @@
             "Niassa": { "Lichinga": ["Lichinga Sede"] }
         };
 
-        // DADOS INICIAIS DA BEIRA (SE LOCALSTORAGE ESTIVER VAZIO)
-        const DADOS_BEIRA_DEFAULT = [
-            { id: 'ECO-MZ-SOF-2026-001', data: '2026-09-10', titulo: 'Abate Ilícito de Mangal e Deposição de Entulho', categoria: 'Destruição de Ecossistemas Costeiros e Mangal', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Munhava', rua: 'Avenida Krus Gomes, junto ao canal', requerente: 'Anónimo', nomeIdentificado: 'Edwin Taimo', gravidade: 'Grave', descricao: 'Detetada destruição deliberada de área protegida de mangal para corte de estacas e aterro ilegal com resíduos de construção.', estado: 'Em Triagem Técnica', votos: 14, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-002', data: '2026-09-12', titulo: 'Descarga Indiscriminada de Efluentes Não Tratados', categoria: 'Poluição de Recursos Hídricos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Ponta Gêa', rua: 'Zona do Chiveve / Estuário', requerente: 'Anónimo', nomeIdentificado: 'Anónimo (Não Registado)', gravidade: 'Moderado', descricao: 'Presença de fortes odores e coloração anómala na água proveniente de descargas comerciais diretas sem passagem por caixa de retenção.', estado: 'Encaminhado à Inspecção', votos: 8, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-003', data: '2026-09-14', titulo: 'Acumulação Crítica de Resíduos Sólidos Urbanos', categoria: 'Deposição Inadequada de Resíduos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Manga', rua: 'Próximo ao Mercado da Manga', requerente: 'Identificado', nomeIdentificado: 'Leyla da Glória Macuácua', gravidade: 'Grave', descricao: 'Deposição descontrolada de lixo orgânico e plásticos bloqueando a vala de drenagem principal com risco de contaminação e inundações.', estado: 'Notificado / Sancionado', votos: 22, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-004', data: '2026-09-15', titulo: 'Escavação Ilegal de Areia em Zona de Proteção Costeira', categoria: 'Mineração Clandestina', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Estoril', rua: 'Praia do Estoril, setor norte', requerente: 'Anónimo', nomeIdentificado: 'José Alberto Macuácua', gravidade: 'Grave', descricao: 'Retirada noturna não autorizada de grandes volumes de areia das dunas de proteção costeira com recurso a tratores de carga.', estado: 'Encaminhado à Inspecção', votos: 19, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-005', data: '2026-09-18', titulo: 'Poluição Sonora e Atmosférica por Queimada de Plásticos', categoria: 'Deposição Inadequada de Resíduos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Vaz', rua: 'Rua das Oficinas', requerente: 'Anónimo', nomeIdentificado: 'Anónimo (Não Registado)', gravidade: 'Leve', descricao: 'Queimada a céu aberto de resíduos industriais e borrachas emitindo fumo denso e tóxico em zona residencial.', estado: 'Resolvido / Mitigado', votos: 5, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-006', data: '2026-09-19', titulo: 'Obstrução Ilegal do Canal de Drenagem Autárquico', categoria: 'Poluição de Recursos Hídricos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Chaimite', rua: 'Rua Correia de Brito', requerente: 'Identificado', nomeIdentificado: 'Edwin Taimo', gravidade: 'Moderado', descricao: 'Lançamento de restos de demolição no leito do canal secundário comprometendo o escoamento pluvial da zona centro.', estado: 'Em Triagem Técnica', votos: 11, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-007', data: '2026-09-20', titulo: 'Corte Não Autorizado de Árvores de Sombra Protegidas', categoria: 'Exploração Florestal Ilegal', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Matacuane', rua: 'Avenida Eduardo Mondlane', requerente: 'Anónimo', nomeIdentificado: 'Anónimo (Não Registado)', gravidade: 'Leve', descricao: 'Abate de árvores de grande porte na via pública sem licença ambiental ou plano de reflorestação compensatória.', estado: 'Resolvido / Mitigado', votos: 7, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-008', data: '2026-09-22', titulo: 'Derramamento de Óleos Usados de Oficina Mecânica', categoria: 'Poluição de Recursos Hídricos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Macurungo', rua: 'Avenida das Indústrias', requerente: 'Identificado', nomeIdentificado: 'José Alberto Macuácua', gravidade: 'Grave', descricao: 'Descarte contínuo de lubrificantes e óleos de motor usados no solo e na rede subterrânea de águas pluviais.', estado: 'Encaminhado à Inspecção', votos: 16, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-009', data: '2026-09-23', titulo: 'Construção Clandestina na Faixa de Proteção do Mangal', categoria: 'Destruição de Ecossistemas Costeiros e Mangal', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Inhamízua', rua: 'Bairro 5, zona baixa', requerente: 'Anónimo', nomeIdentificado: 'Leyla da Glória Macuácua', gravidade: 'Grave', descricao: 'Ereção de infraestruturas definitivas em zona húmida de proteção ambiental com corte de vegetação nativa.', estado: 'Em Triagem Técnica', votos: 25, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-010', data: '2026-09-24', titulo: 'Venda Ilegal de Espécies de Fauna Aquática Protegida', categoria: 'Caça Furtiva e Abate Ilegal', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Macuti', rua: 'Junto à Praia das Palmeiras', requerente: 'Anónimo', nomeIdentificado: 'Anónimo (Não Registado)', gravidade: 'Moderado', descricao: 'Comercialização não autorizada de tartarugas marinhas e espécies de peixe em época de defeso.', estado: 'Notificado / Sancionado', votos: 18, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-011', data: '2026-09-25', titulo: 'Lixeira Viciada com Resíduos Hospitalares Perigosos', categoria: 'Deposição Inadequada de Resíduos', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Alto da Manga', rua: 'Rua do Posto de Saúde', requerente: 'Identificado', nomeIdentificado: 'Edwin Taimo', gravidade: 'Grave', descricao: 'Abandono de agulhas, frascos e material biológico descartável em terreno baldio próximo a habitações.', estado: 'Encaminhado à Inspecção', votos: 30, imagem: '' },
-            { id: 'ECO-MZ-SOF-2026-012', data: '2026-09-26', titulo: 'Erosão Severa Provocada por Extracção de Agregados', categoria: 'Mineração Clandestina', provincia: 'Sofala', distrito: 'Cidade da Beira', bairro: 'Nhangau', rua: 'Zona de Saibro', requerente: 'Anónimo', nomeIdentificado: 'Anónimo (Não Registado)', gravidade: 'Grave', descricao: 'Escavações descontroladas para remoção de saibro causando desestabilização do solo e crateras com água estagnada.', estado: 'Em Triagem Técnica', votos: 13, imagem: '' }
-        ];
-
-        let denuncias = JSON.parse(localStorage.getItem('ecodenuncia_dados'));
-        if (!denuncias || denuncias.length === 0) {
-            denuncias = DADOS_BEIRA_DEFAULT;
-            localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
-        }
-
+        let denuncias = [];
         let utilizadorAtual = JSON.parse(localStorage.getItem('ecodenuncia_user')) || null;
         let modoAuth = 'login';
         let imagemBase64 = '';
@@ -466,8 +449,18 @@
             lucide.createIcons();
             carregarDistritos();
             atualizarEstadoUtilizador();
-            aplicarFiltros();
+            escutarDenunciasFirebase();
         });
+
+        // ESCUTAR ALTERAÇÕES EM TEMPO REAL NO CLOUD FIRESTORE
+        function escutarDenunciasFirebase() {
+            db.collection('denuncias').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                denuncias = snapshot.docs.map(doc => doc.data());
+                aplicarFiltros();
+            }, error => {
+                console.error("Erro ao carregar dados do Firebase:", error);
+            });
+        }
 
         function previewImagem(event) {
             const file = event.target.files[0];
@@ -557,9 +550,12 @@
             }
         }
 
-        function submeterDenuncia(e) {
+        async function submeterDenuncia(e) {
             e.preventDefault();
-            
+            const btnSubmit = document.getElementById('btn-submit-denuncia');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "A enviar para a nuvem...";
+
             const modoAnonimo = document.querySelector('input[name="modo_anonimo"]:checked').value;
             const provincia = document.getElementById('denuncia-provincia').value;
             
@@ -583,23 +579,32 @@
                 requerente: modoAnonimo === 'identificado' ? (utilizadorAtual ? utilizadorAtual.nome : 'Identificado') : 'Anónimo',
                 nomeIdentificado: utilizadorAtual ? utilizadorAtual.nome : 'Não registado (Anónimo)',
                 data: new Date().toISOString().split('T')[0],
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 estado: 'Em Triagem Técnica',
                 votos: 1,
                 imagem: imagemBase64
             };
 
-            denuncias.unshift(novaOcorrencia);
-            localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
-            
-            fecharModalDenuncia();
-            document.getElementById('form-denuncia').reset();
-            document.getElementById('preview-container').classList.add('hidden');
-            imagemBase64 = '';
-            verificarCategoriaCustomizada();
-            carregarDistritos();
-            aplicarFiltros();
+            try {
+                // GRAVAR NO CLOUD FIRESTORE ONLINE
+                await db.collection('denuncias').doc(idCodigo).set(novaOcorrencia);
 
-            alert(`Denúncia submetida com sucesso!\nCódigo do Processo: ${novaOcorrencia.id}`);
+                fecharModalDenuncia();
+                document.getElementById('form-denuncia').reset();
+                document.getElementById('preview-container').classList.add('hidden');
+                imagemBase64 = '';
+                verificarCategoriaCustomizada();
+                carregarDistritos();
+
+                alert(`Denúncia gravada com sucesso na nuvem!\nCódigo do Processo: ${novaOcorrencia.id}`);
+            } catch (err) {
+                console.error("Erro ao guardar denúncia:", err);
+                alert("Ocorreu um erro ao enviar para a nuvem. Tente novamente.");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i><span>Submeter Denúncia</span>`;
+                lucide.createIcons();
+            }
         }
 
         function aplicarFiltros() {
@@ -609,10 +614,10 @@
             const estado = document.getElementById('filtro-estado').value;
 
             const filtrados = denuncias.filter(item => {
-                const matchTermo = item.titulo.toLowerCase().includes(termo) || 
-                                  item.descricao.toLowerCase().includes(termo) ||
-                                  item.bairro.toLowerCase().includes(termo) ||
-                                  item.rua.toLowerCase().includes(termo);
+                const matchTermo = (item.titulo || '').toLowerCase().includes(termo) || 
+                                  (item.descricao || '').toLowerCase().includes(termo) ||
+                                  (item.bairro || '').toLowerCase().includes(termo) ||
+                                  (item.rua || '').toLowerCase().includes(termo);
                 const matchProv = !provincia || item.provincia === provincia;
                 const matchCat = !categoria || item.categoria === categoria;
                 const matchEst = !estado || item.estado === estado;
@@ -627,13 +632,13 @@
         function renderizarLista(lista) {
             const container = document.getElementById('lista-denuncias');
             const contador = document.getElementById('contador-resultados');
-            contador.textContent = `Mostrando ${lista.length} processos registados`;
+            contador.textContent = `Mostrando ${lista.length} processos registados online`;
 
             if (lista.length === 0) {
                 container.innerHTML = `
                     <div class="bg-dark-card p-12 text-center rounded-xl border border-gray-800">
                         <i data-lucide="folder-search" class="w-12 h-12 text-gray-600 mx-auto mb-3"></i>
-                        <p class="text-gray-400 font-medium">Nenhum processo localizado para os critérios selecionados.</p>
+                        <p class="text-gray-400 font-medium">Nenhum processo localizado na base de dados.</p>
                     </div>
                 `;
                 lucide.createIcons();
@@ -659,7 +664,7 @@
                                     ${item.estado}
                                 </span>
                             </div>
-                            <span class="text-xs text-gray-500 font-mono">Data do Reporte: ${item.data}</span>
+                            <span class="text-xs text-gray-500 font-mono">Data: ${item.data}</span>
                         </div>
 
                         <h4 class="text-lg font-bold text-white mb-1">${item.titulo}</h4>
@@ -691,7 +696,7 @@
 
                             <button onclick="apoiarProcesso('${item.id}')" class="flex items-center space-x-1.5 bg-gray-800 hover:bg-gray-700 text-green-400 px-3 py-1.5 rounded-lg border border-gray-700 transition">
                                 <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
-                                <span>Apoiar Requerimento (${item.votos})</span>
+                                <span>Apoiar Requerimento (${item.votos || 1})</span>
                             </button>
                         </div>
                     </article>
@@ -701,12 +706,14 @@
             lucide.createIcons();
         }
 
-        function apoiarProcesso(id) {
-            const item = denuncias.find(d => d.id === id);
-            if (item) {
-                item.votos += 1;
-                localStorage.setItem('ecodenuncia_dados', JSON.stringify(denuncias));
-                aplicarFiltros();
+        async function apoiarProcesso(id) {
+            try {
+                const docRef = db.collection('denuncias').doc(id);
+                await docRef.update({
+                    votos: firebase.firestore.FieldValue.increment(1)
+                });
+            } catch (err) {
+                console.error("Erro ao apoiar denúncia:", err);
             }
         }
 
